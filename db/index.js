@@ -1,9 +1,19 @@
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('database.sqlite');
 
+const TESTING = true;
+
 // Initialise all schemas. Needs to run in serial.
 const initialiseSchemas = () => {
     db.serialize(() => {
+        if(TESTING) {
+            db.run('DROP TABLE IF EXISTS Guild;');
+            db.run('DROP TABLE IF EXISTS User;');
+            db.run('DROP TABLE IF EXISTS Leaderboard;');
+            db.run('DROP TABLE IF EXISTS LeaderboardVariable;');
+            db.run('DROP TABLE IF EXISTS TrackedLeaderboard;');
+        }
+
         // Guild - discord server.
         db.run(`CREATE TABLE IF NOT EXISTS Guild (
             guild_id TEXT NOT NULL PRIMARY KEY,
@@ -41,8 +51,59 @@ const initialiseSchemas = () => {
             guild_id TEXT NOT NULL REFERENCES Guild (guild_id),
             lb_id INT NOT NULL REFERENCES Leaderboard (lb_id),
             PRIMARY KEY (guild_id, lb_id)
-        )`)
-    })
+        )`);
+
+        // Fill with dummy data
+        if(TESTING) {
+            // Bot Testing
+            db.run("INSERT INTO Guild (guild_id) VALUES ('705780146216370326');");
+
+            // dummy data
+            db.run(`INSERT INTO User VALUES
+                ('qjoz6gn8', 'diggity', '270856336466509835'),
+                ('8en3o968', 'MildGothDaddy', '349773873031413761'),
+                ('8vogmevx', 'PleasantlyGG', '544510397042917395'),
+                ('jop6zmex', 'Zomb_Slays', '440320868783226890');
+            `);
+
+            /*
+                Veneficium Any% (Mild)
+                Late Work Any% (Diggity)
+                Cultists & Compounds Good% (Zomb) 
+                Cultists & Compounds Bad% (Mild)
+                The Building 71 Incident Any% (Zomb)
+                Blackberry Any% (Pleasant)
+                Nun Massacre Any% - Glitchess (Zomb)
+
+                Gibberish
+            */
+            db.run(`INSERT INTO Leaderboard (game_id, category_id, wr_holder_id, wr_run_id) VALUES
+                ('m1zj9r06', 'wkp9pl02', '8en3o968', 'ylrkqdny'),
+                ('m1mnepkd', 'n2yvqne2', 'qjoz6gn8', 'm37dpn4z'),
+                ('j1lq9qz6', '7dgmx0pd', 'jop6zmex', 'mrnvp84y'),
+                ('j1lq9qz6', 'mkexvl6d', '8en3o968', 'z1xg8wrm'),
+                ('y6550w36', 'jdrr8jnd', 'jop6zmex', 'y27w1r6z'),
+                ('9do88le1', 'wk60q8rk', '8vogmevx', 'm37w78wz'),
+                ('y654kg7d', 'xd1l9xrk', 'jop6zmex', 'zp8k75xy');
+            `);
+
+            // Nun Massacre Any% - Glitchess
+            db.run(`INSERT INTO LeaderboardVariable (lb_id, variable_id, value) VALUES
+                (7, 'ylqkj9ml', 'zqorkrpq')
+            `);
+
+            // Guild tracks all of these leaderboards
+            db.run(`INSERT INTO TrackedLeaderboard VALUES
+                ('705780146216370326', 1),
+                ('705780146216370326', 2),
+                ('705780146216370326', 3),
+                ('705780146216370326', 4),
+                ('705780146216370326', 5),
+                ('705780146216370326', 6),
+                ('705780146216370326', 7)
+            `);
+        }
+    });
 }
 
 module.exports = { initialiseSchemas }

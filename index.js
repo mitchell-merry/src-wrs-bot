@@ -15,6 +15,7 @@ const init = () => {
     // Database
     console.log("Setting up the SQLite database...");
     initialiseSchemas();
+    console.log("Database has been initialised.");
 
     // Interact with the src API and update world records accordingly
 };
