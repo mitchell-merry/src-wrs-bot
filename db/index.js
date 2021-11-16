@@ -4,7 +4,7 @@ var db = new sqlite3.Database('database.sqlite');
 const TESTING = true;
 
 // Initialise all schemas. Needs to run in serial.
-const initialiseSchemas = () => {
+const initialise_schemas = () => {
     db.serialize(() => {
         if(TESTING) {
             db.run('DROP TABLE IF EXISTS Guild;');
@@ -56,14 +56,22 @@ const initialiseSchemas = () => {
         // Fill with dummy data
         if(TESTING) {
             // Bot Testing
-            db.run("INSERT INTO Guild (guild_id) VALUES ('705780146216370326');");
+            db.run("INSERT INTO Guild (guild_id, wr_role_color) VALUES ('705780146216370326', 15844367);");
 
             // dummy data
+            // db.run(`INSERT INTO User VALUES
+            //     ('qjoz6gn8', 'diggity', '270856336466509835'),
+            //     ('8en3o968', 'MildGothDaddy', '349773873031413761'),
+            //     ('8vogmevx', 'PleasantlyGG', '544510397042917395'),
+            //     ('jop6zmex', 'Zomb_Slays', '440320868783226890');
+            // `);
+            
+            // Bot IDs to stand in
             db.run(`INSERT INTO User VALUES
                 ('qjoz6gn8', 'diggity', '270856336466509835'),
-                ('8en3o968', 'MildGothDaddy', '349773873031413761'),
-                ('8vogmevx', 'PleasantlyGG', '544510397042917395'),
-                ('jop6zmex', 'Zomb_Slays', '440320868783226890');
+                ('8en3o968', 'MildGothDaddy', '234395307759108106'),
+                ('8vogmevx', 'PleasantlyGG', '339254240012664832'),
+                ('jop6zmex', 'Zomb_Slays', '705780864549650493');
             `);
 
             /*
@@ -106,4 +114,30 @@ const initialiseSchemas = () => {
     });
 }
 
-module.exports = { initialiseSchemas }
+const get_leaderboard_object = (lb_id) => {
+    db.serialize(() => {
+        db.get(
+            `SELECT game_id, category_id, wr_holder_id, wr_run_id FROM Leaderboard WHERE lb_id = $id;`, 
+            { $id: lb_id },
+            (err, row) => {
+                console.log(row);
+            }
+        );
+
+        db.all(
+            `SELECT variable_id, value FROM LeaderboardVariable WHERE lb_id = $id;`, 
+            { $id: lb_id },
+            (err, rows) => {
+                console.log(rows);
+            }
+        );
+    })
+
+    // // console.log(Leaderboard)
+    // console.log(LeaderboardVariables)
+}
+
+module.exports = { 
+    initialise_schemas,
+    get_leaderboard_object
+}

@@ -1,7 +1,7 @@
 const { Client } = require('discord.js');
 const client = new Client({ intents: [] });
 
-const { initialiseSchemas } = require('./db');
+const { initialise_schemas, get_leaderboard_object } = require('./db');
 const { token } = require('./auth.json');
 
 // Initialisation code to be run after the discord client has logged in.
@@ -14,8 +14,10 @@ const init = () => {
 
     // Database
     console.log("Setting up the SQLite database...");
-    initialiseSchemas();
+    initialise_schemas();
     console.log("Database has been initialised.");
+
+    get_leaderboard_object(7);
 
     // Interact with the src API and update world records accordingly
 };
