@@ -37,8 +37,7 @@ class User extends Model {
     static associate(models) {
         this.hasMany(models.Leaderboard, {
             foreignKey: "wr_holder_id", 
-            sourceKey: "user_id", 
-            as: "WRHolder"
+            sourceKey: "user_id"
         });
 
     }

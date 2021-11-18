@@ -10,7 +10,7 @@ const initialise_schemas = () => {
             db.run('DROP TABLE IF EXISTS Guild;');
             db.run('DROP TABLE IF EXISTS User;');
             db.run('DROP TABLE IF EXISTS Leaderboard;');
-            db.run('DROP TABLE IF EXISTS LeaderboardVariable;');
+            db.run('DROP TABLE IF EXISTS Variable;');
             db.run('DROP TABLE IF EXISTS TrackedLeaderboard;');
         }
 
@@ -38,8 +38,8 @@ const initialise_schemas = () => {
             wr_run_id TEXT
         )`);
 
-        // LeaderboardVariable - Defining the variables for each leaderboard (subcategories)
-        db.run(`CREATE TABLE IF NOT EXISTS LeaderboardVariable (
+        // Variable - Defining the variables for each leaderboard (subcategories)
+        db.run(`CREATE TABLE IF NOT EXISTS Variable (
             lb_id INTEGER NOT NULL REFERENCES Leaderboard (lb_id),
             variable_id TEXT NOT NULL,
             value TEXT NOT NULL,
@@ -96,7 +96,7 @@ const initialise_schemas = () => {
             `);
 
             // Nun Massacre Any% - Glitchess
-            db.run(`INSERT INTO LeaderboardVariable (lb_id, variable_id, value) VALUES
+            db.run(`INSERT INTO Variable (lb_id, variable_id, value) VALUES
                 (7, 'ylqkj9ml', 'zqorkrpq')
             `);
 
@@ -125,7 +125,7 @@ const get_leaderboard_object = (lb_id) => {
         );
 
         db.all(
-            `SELECT variable_id, value FROM LeaderboardVariable WHERE lb_id = $id;`, 
+            `SELECT variable_id, value FROM Variable WHERE lb_id = $id;`, 
             { $id: lb_id },
             (err, rows) => {
                 console.log(rows);
@@ -134,7 +134,7 @@ const get_leaderboard_object = (lb_id) => {
     })
 
     // // console.log(Leaderboard)
-    // console.log(LeaderboardVariables)
+    // console.log(Variables)
 }
 
 module.exports = { 

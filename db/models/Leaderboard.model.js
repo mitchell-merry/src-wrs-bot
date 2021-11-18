@@ -61,7 +61,7 @@ class Leaderboard extends Model {
             otherKey: "guild_id"
         });
 
-        this.hasMany(models.LeaderboardVariable, {
+        this.hasMany(models.Variable, {
             foreignKey: "lb_id",
             sourceKey: "lb_id"
         });

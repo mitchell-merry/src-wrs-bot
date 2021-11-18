@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require("sequelize");
 
-class LeaderboardVariable extends Model {
+class Variable extends Model {
     static init(sequelize) {
         return super.init({
             lb_id: {
@@ -22,7 +22,7 @@ class LeaderboardVariable extends Model {
                 allowNull: false
             }
         }, {
-            tableName: "LeaderboardVariable",
+            tableName: "Variable",
             underscored: true,
             freezeTableName: true,
             sequelize
@@ -37,4 +37,4 @@ class LeaderboardVariable extends Model {
     }
 }
 
-module.exports = LeaderboardVariable;
+module.exports = Variable;

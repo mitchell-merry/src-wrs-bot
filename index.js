@@ -18,7 +18,7 @@ const init = async () => {
     const sequelize = await db.connect();
     console.log("Database successfully initialised.");
 
-    console.log(sequelize);
+    // console.log(sequelize);
     // get_leaderboard_object(7);
 
     // Interact with the src API and update world records accordingly
