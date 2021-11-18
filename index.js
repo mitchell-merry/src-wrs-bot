@@ -1,11 +1,12 @@
 const { Client } = require('discord.js');
 const client = new Client({ intents: [] });
 
-const { initialise_schemas, get_leaderboard_object } = require('./db');
+// const { initialise_schemas, get_leaderboard_object } = require('./db');
 const { token } = require('./auth.json');
+const db = require('./db');
 
 // Initialisation code to be run after the discord client has logged in.
-const init = () => {
+const init = async () => {
     // Log all the guilds the bot is in.
     console.log(`Client is ready in the following Guilds: [${client.guilds.cache.size}]`);
     client.guilds.cache.forEach(g => {
@@ -14,10 +15,11 @@ const init = () => {
 
     // Database
     console.log("Setting up the SQLite database...");
-    initialise_schemas();
-    console.log("Database has been initialised.");
+    const sequelize = await db.connect();
+    console.log("Database successfully initialised.");
 
-    get_leaderboard_object(7);
+    console.log(sequelize);
+    // get_leaderboard_object(7);
 
     // Interact with the src API and update world records accordingly
 };

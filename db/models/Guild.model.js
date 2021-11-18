@@ -28,12 +28,23 @@ class Guild extends Model {
             }
         }, {
             tableName: "Guild",
+            underscored: true,
+            freezeTableName: true,
             sequelize
         });
     }
 
     static associate(models) {
-        this.hasMany(models.TrackedLeaderboard);
+        this.hasMany(models.TrackedLeaderboard, {
+            foreignKey: "guild_id",
+            targetKey: "guild_id",
+            as: "Guild"
+        });
+        this.belongsToMany(models.Leaderboard, {
+            through: models.TrackedLeaderboard,
+            foreignKey: "guild_id",
+            otherKey: "lb_id"
+        });
     }
 }
 
