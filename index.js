@@ -20,6 +20,24 @@ const init = async () => {
 
     console.log(await getAllLeaderboardsForGuild(sequelize.models, '705780146216370326'));
 
+    // const { Guild, Leaderboard, Variable } = sequelize.models;
+
+    // Guild.findByPk('705780146216370326', {
+    //     include: {
+    //         model: Leaderboard,
+    //         through: { attributes: [] },
+    //         attributes: { exclude: [ 'lb_id', 'wr_holder_id', 'wr_run_id' ] },
+    //         include: [{ 
+    //             model: Variable,
+    //             attributes: { exclude: ['lb_id'] }
+    //         }]
+    //     },
+    //     attributes: {
+    //         exclude: [ 'guild_id', 'wr_message_id', 'wr_role_color' ]
+    //     }
+    // })
+    // .then((res) => console.log(JSON.stringify(res, null, 2)));
+
     // await sequelize.models.Leaderboard.findAll()
     //     .then((res) => console.log(JSON.stringify(res, null, 2)));
 
@@ -54,15 +72,18 @@ const getAllLeaderboardsForGuild = async (models, guild_id) => {
         include: {
             model: Leaderboard,
             through: { attributes: [] },
-            exclude: [ 'wr_holder_id', 'wr_run_id' ],
+            attributes: { exclude: [ 'lb_id', 'wr_holder_id', 'wr_run_id' ] },
             include: [{ 
                 model: Variable,
-                exclude: ["lb_id"]
+                attributes: { exclude: ['lb_id'] }
             }]
+        },
+        attributes: {
+            exclude: [ 'guild_id', 'wr_message_id', 'wr_role_color' ]
         }
     });
     console.log(JSON.stringify(G, null, 2));
-    
+
     const lb_names = [];
     for(const board of G.Leaderboards) {
         const b = { game_id: board.game_id, category_id: board.category_id, variables: [ ...board.Variables ] }
@@ -91,9 +112,10 @@ const getLeaderboardName = async (leaderboard) => {
     //     variableListToURLParamaters(leaderboard.variables)
     // }`;
     let req = `${pref}games/${leaderboard.game_id}?embed=categories,variables`;
+
     const game = await fetch(req).then(res => res.json());
     
-    // console.log(JSON.stringify(res, null, 2));
+    console.log(JSON.stringify(game, null, 2));
     // res.data.names.international
     // res.data.categories.data[...].id
     // res.data.variables.data.
