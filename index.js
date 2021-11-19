@@ -18,6 +18,8 @@ const init = async () => {
     const sequelize = await db.connect();
     console.log("Database successfully initialised.");
 
+    console.log(sequelize.models);
+
     // console.log(sequelize);
     // get_leaderboard_object(7);
 

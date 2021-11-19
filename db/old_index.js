@@ -132,9 +132,6 @@ const get_leaderboard_object = (lb_id) => {
             }
         );
     })
-
-    // // console.log(Leaderboard)
-    // console.log(Variables)
 }
 
 module.exports = { 
