@@ -30,6 +30,7 @@ class Guild extends Model {
             tableName: "Guild",
             underscored: true,
             freezeTableName: true,
+            timestamps: false,
             sequelize
         });
     }

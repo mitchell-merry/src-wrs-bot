@@ -40,6 +40,7 @@ class Leaderboard extends Model {
             tableName: "Leaderboard",
             underscored: true,
             freezeTableName: true,
+            timestamps: false,
             sequelize
         });
     }

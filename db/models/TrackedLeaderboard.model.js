@@ -29,6 +29,7 @@ class TrackedLeaderboard extends Model {
             tableName: "TrackedLeaderboard",
             underscored: true,
             freezeTableName: true,
+            timestamps: false,
             sequelize
         });
     }

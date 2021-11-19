@@ -30,6 +30,7 @@ class User extends Model {
             tableName: "User",
             underscored: true,
             freezeTableName: true,
+            timestamps: false,
             sequelize
         });
     }

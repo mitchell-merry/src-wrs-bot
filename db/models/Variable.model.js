@@ -25,6 +25,7 @@ class Variable extends Model {
             tableName: "Variable",
             underscored: true,
             freezeTableName: true,
+            timestamps: false,
             sequelize
         });
     }

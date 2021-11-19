@@ -18,7 +18,23 @@ const init = async () => {
     const sequelize = await db.connect();
     console.log("Database successfully initialised.");
 
-    console.log(sequelize.models);
+    const { Guild, Leaderboard, Variable, User } = sequelize.models;
+
+    await Guild.findByPk('705780146216370326', {
+            include: {
+                model: Leaderboard,
+                through: { attributes: [] },
+                include: [{ 
+                    model: Variable,
+                    exclude: ["lb_id"]
+                }, {
+                    model: User,
+                    as: "WRHolder"
+                }]
+            }
+        })
+        // .then(G => G.getLeaderboards({ include: }))
+        .then(res => console.log(JSON.stringify(res, null, 2)));
 
     // console.log(sequelize);
     // get_leaderboard_object(7);

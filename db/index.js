@@ -163,14 +163,14 @@ const dummyData = async (models) => {
 }
 
 const syncGuilds = async (guilds) => {
-    const { Guild } = config.mysql.client.models;
-    for(let guild of guilds) {
-        const G = await Guild.findByPk(guild[0]);
-        if(!G) {
-            console.log(`Syncing guild ${guild[0]}...`)
-            Guild.create( {guild_id: guild[0] })
-        }
-    }
+    // const { Guild } = config.mysql.client.models;
+    // for(let guild of guilds) {
+    //     const G = await Guild.findByPk(guild[0]);
+    //     if(!G) {
+    //         console.log(`Syncing guild ${guild[0]}...`)
+    //         Guild.create( {guild_id: guild[0] })
+    //     }
+    // }
 }
 
 const logModelAssociations = async (models) => {
