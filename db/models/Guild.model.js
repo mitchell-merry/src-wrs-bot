@@ -1,6 +1,7 @@
-const { DataTypes, Model } = require("sequelize");
+import pkg from "sequelize";
+const { DataTypes, Model } = pkg;
 
-class Guild extends Model {
+export default class Guild extends Model {
     static init(sequelize) {
         /*
             CREATE TABLE IF NOT EXISTS Guild (
@@ -48,5 +49,3 @@ class Guild extends Model {
         });
     }
 }
-
-module.exports = Guild;

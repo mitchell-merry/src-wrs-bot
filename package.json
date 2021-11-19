@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "Bot to manage world records on speedrun.com and connect them to discord accounts in the form of WR roles and a channel listing the runs.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index",
+    "start": "node --experimental-json-modules --experimental-specifier-resolution=node index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -1,6 +1,7 @@
-const { DataTypes, Model } = require("sequelize");
+import pkg from "sequelize";
+const { DataTypes, Model } = pkg;
 
-class Variable extends Model {
+export default class Variable extends Model {
     static init(sequelize) {
         return super.init({
             lb_id: {
@@ -37,5 +38,3 @@ class Variable extends Model {
         });
     }
 }
-
-module.exports = Variable;

@@ -1,6 +1,7 @@
-const { DataTypes, Model } = require("sequelize");
+import pkg from "sequelize";
+const { DataTypes, Model } = pkg;
 
-class TrackedLeaderboard extends Model {
+export default class TrackedLeaderboard extends Model {
     static init(sequelize) {
         return super.init({
             /*
@@ -45,5 +46,3 @@ class TrackedLeaderboard extends Model {
         });
     }
 }
-
-module.exports = TrackedLeaderboard;

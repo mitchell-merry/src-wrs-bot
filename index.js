@@ -1,9 +1,9 @@
-const { Client } = require('discord.js');
+import { Client } from 'discord.js';
+import fetch from 'node-fetch';
 const client = new Client({ intents: [] });
 
-// const { initialise_schemas, get_leaderboard_object } = require('./db');
-const { token } = require('./auth.json');
-const db = require('./db');
+import { token } from './auth';
+import * as db from './db/index.js';
 
 // Initialisation code to be run after the discord client has logged in.
 const init = async () => {
@@ -67,9 +67,10 @@ const getAllLeaderboardsForGuild = async (models, guild_id) => {
     for(const board of G.Leaderboards) {
         const b = { game_id: board.game_id, category_id: board.category_id, variables: [ ...board.Variables ] }
         // console.log(JSON.stringify(b, null, 2));
-        console.log(await getLeaderboardName(b))
+        lb_names.push(await getLeaderboardName(b));
     }
 
+    return lb_names;
 }
 
 const pref = 'https://www.speedrun.com/api/v1/'
@@ -90,8 +91,25 @@ const getLeaderboardName = async (leaderboard) => {
     //     variableListToURLParamaters(leaderboard.variables)
     // }`;
     let req = `${pref}games/${leaderboard.game_id}?embed=categories,variables`;
-    fetch(req).then(res => console.log(JSON.stringify(res, null, 2)));
-    // fetch()
+    const game = await fetch(req).then(res => res.json());
+    
+    // console.log(JSON.stringify(res, null, 2));
+    // res.data.names.international
+    // res.data.categories.data[...].id
+    // res.data.variables.data.
+
+    let name = `${game.data.names.international} - ${game.data.categories.data.find(c => c.id === leaderboard.category_id).name}`;
+
+    if(leaderboard.variables && leaderboard.variables.length > 0) {
+        name += ` (${
+            // Just so much fun
+            leaderboard.variables.map(v => {
+                return game.data.variables.data.find(t => t.id === v.variable_id).values.values[v.value].label;
+            }).join(', ')
+        })`;
+    }
+
+    return name;
 }
 
 const variableListToURLParameters = async (variables) => {

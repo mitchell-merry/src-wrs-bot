@@ -1,18 +1,20 @@
-const Sequelize = require('sequelize');
-const config = require('../config');
+import Sequelize from 'sequelize';
+import * as m from './models';
+import config from '../config';
 
 const TESTING = true;
 
-const sync = async (sequelize) => {
+export const sync = async (sequelize) => {
+    console.log(Object.keys(m))
     const models = {
-        Guild: require('./models/Guild.model').init(sequelize),
-        User: require('./models/User.model').init(sequelize),
-        Leaderboard: require('./models/Leaderboard.model').init(sequelize),
-        Variable: require('./models/Variable.model').init(sequelize),
-        TrackedLeaderboard: require('./models/TrackedLeaderboard.model').init(sequelize),
+        Guild: m.Guild.init(sequelize),
+        User: m.User.init(sequelize),
+        Leaderboard: m.Leaderboard.init(sequelize),
+        Variable: m.Variable.init(sequelize),
+        TrackedLeaderboard: m.TrackedLeaderboard.init(sequelize),
     };
 
-    // code i found on stackoverflow to help me debug & write code
+    // Associate the models using their associate functions
     await Object.values(models)
         .filter(model => typeof model.associate === "function")
         .forEach(model => model.associate(models));
@@ -24,7 +26,7 @@ const sync = async (sequelize) => {
     if(TESTING) await dummyData(models);
 }
 
-const connect = async () => {
+export const connect = async () => {
     const sequelize = await new Sequelize({
         dialect: 'sqlite',
         storage: './database.sqlite'
@@ -173,7 +175,8 @@ const syncGuilds = async (guilds) => {
     // }
 }
 
-const logModelAssociations = async (models) => {
+// code i found on stackoverflow to help me debug & write code
+export const logModelAssociations = async (models) => {
     for (let model of Object.keys(models)) {
         if(models[model].name === 'Sequelize')
             continue;
@@ -188,15 +191,8 @@ const logModelAssociations = async (models) => {
         console.log("\nAssociations");
         for (let assoc of Object.keys(models[model].associations)) {
             for (let accessor of Object.keys(models[model].associations[assoc].accessors)) {
-            console.log(models[model].name + '.' + models[model].associations[assoc].accessors[accessor]+'()');
+                console.log(models[model].name + '.' + models[model].associations[assoc].accessors[accessor]+'()');
             }
         }
     }
 }
-
-module.exports = {
-    connect,
-    sync,
-    syncGuilds,
-    logModelAssociations,
-};

@@ -1,6 +1,7 @@
-const { DataTypes, Model } = require("sequelize");
+import pkg from "sequelize";
+const { DataTypes, Model } = pkg;
 
-class Leaderboard extends Model {
+export default class Leaderboard extends Model {
     static init(sequelize) {
         /*
             CREATE TABLE IF NOT EXISTS Leaderboard (
@@ -68,5 +69,3 @@ class Leaderboard extends Model {
         });
     }
 }
-
-module.exports = Leaderboard;
