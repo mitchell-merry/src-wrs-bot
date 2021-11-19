@@ -33,7 +33,7 @@ class Leaderboard extends Model {
                 type: DataTypes.STRING
             },
             wr_run_id: {
-                field: "category_id",
+                field: "wr_run_id",
                 type: DataTypes.STRING,
             }
         }, {
