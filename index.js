@@ -71,8 +71,8 @@ const getAllLeaderboardsForGuild = async (models, guild_id) => {
     const G = await Guild.findByPk(guild_id, {
         include: {
             model: Leaderboard,
-            through: { attributes: [] },
-            attributes: { exclude: [ 'lb_id', 'wr_holder_id', 'wr_run_id' ] },
+            through: { attributes: [ ] },
+            attributes: { exclude: [ 'lb_id' ] },
             include: [{ 
                 model: Variable,
                 attributes: { exclude: ['lb_id'] }
@@ -119,7 +119,7 @@ const getLeaderboardName = async (leaderboard) => {
     // let req = `${pref}games/${leaderboard.game_id}/records?scope=full-game&top=1&embed=categories,variables`;
     const lb = await fetch(req).then(res => res.json());
     
-    console.log(JSON.stringify(lb.data, null, 2));
+    // console.log(JSON.stringify(lb.data, null, 2));
     // console.log(lb.runs.map(r => r.run.players.))
     // return req;
     // res.data.names.international
@@ -152,5 +152,5 @@ const timeFormatting = (time) => {
     let seconds = Math.floor(time % 60);
     let milli = Math.round((time % 1) * 1000)
     return (hours !== 0 ? `${hours}:${(minutes < 10 ? '0' : '')}` : '') 
-    + `${minutes}:${seconds}${milli !== 0 ? '.'+milli : ''}`;
+    + `${minutes}:${(seconds < 10 ? '0' : '')}${seconds}${milli !== 0 ? '.'+milli : ''}`;
 }

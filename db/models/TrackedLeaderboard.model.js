@@ -4,14 +4,7 @@ const { DataTypes, Model } = pkg;
 export default class TrackedLeaderboard extends Model {
     static init(sequelize) {
         return super.init({
-            /*
-                CREATE TABLE IF NOT EXISTS TrackedLeaderboard (
-                    guild_id TEXT NOT NULL REFERENCES Guild (guild_id),
-                    lb_id INT NOT NULL REFERENCES Leaderboard (lb_id),
-                    PRIMARY KEY (guild_id, lb_id)
-                )
-            */
-
+            
             guild_id: {
                 field: "guild_id",
                 primaryKey: true,
@@ -26,6 +19,10 @@ export default class TrackedLeaderboard extends Model {
                 allowNull: false,
                 autoIncrement: false,
             },
+            role_id: {
+                field: "role_id",
+                type: DataTypes.STRING
+            }
         }, {
             tableName: "TrackedLeaderboard",
             underscored: true,
@@ -36,11 +33,12 @@ export default class TrackedLeaderboard extends Model {
     }
 
     static associate(models) {
-        this.belongsTo(models.Leaderboard, {
+        this.Leaderboard = this.belongsTo(models.Leaderboard, {
             foreignKey: "lb_id",
             targetKey: "lb_id"
         });
-        this.belongsTo(models.Guild, {
+
+        this.Guild = this.belongsTo(models.Guild, {
             foreignKey: "guild_id",
             targetKey: "guild_id"
         });

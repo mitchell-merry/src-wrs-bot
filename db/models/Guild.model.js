@@ -3,13 +3,6 @@ const { DataTypes, Model } = pkg;
 
 export default class Guild extends Model {
     static init(sequelize) {
-        /*
-            CREATE TABLE IF NOT EXISTS Guild (
-                guild_id TEXT NOT NULL PRIMARY KEY,
-                wr_message_id TEXT,
-                wr_role_color INT
-            )
-        */
         
         return super.init({
             guild_id: {
@@ -26,6 +19,10 @@ export default class Guild extends Model {
             wr_role_color: {
                 field: "wr_role_color",
                 type: DataTypes.STRING,
+            },
+            track_sum: {
+                field: "track_sum",
+                type: DataTypes.BOOLEAN,
             }
         }, {
             tableName: "Guild",
@@ -37,12 +34,12 @@ export default class Guild extends Model {
     }
 
     static associate(models) {
-        this.hasMany(models.TrackedLeaderboard, {
+        this.TrackedLeaderboards = this.hasMany(models.TrackedLeaderboard, {
             foreignKey: "guild_id",
             targetKey: "guild_id",
-            as: "Guild"
         });
-        this.belongsToMany(models.Leaderboard, {
+
+        this.Leaderboards = this.belongsToMany(models.Leaderboard, {
             through: models.TrackedLeaderboard,
             foreignKey: "guild_id",
             otherKey: "lb_id"
