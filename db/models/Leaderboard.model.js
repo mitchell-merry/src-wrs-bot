@@ -21,6 +21,10 @@ export default class Leaderboard extends Model {
                 allowNull: false,
                 autoIncrement: true,
             },
+            lb_name: {
+                field: "lb_name",
+                type: DataTypes.STRING,
+            },
             game_id: {
                 field: "game_id",
                 type: DataTypes.STRING,
