@@ -85,6 +85,7 @@ const dummyData = async (models) => {
         }]
     }, {
         include: [ Leaderboard ]
+        // https://sequelize.org/master/manual/creating-with-associations.html
         // include: [{
         //     model: Leaderboard,
         //     association: Guild.associations.Leaderboards,
