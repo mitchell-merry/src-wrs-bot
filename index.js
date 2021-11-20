@@ -75,6 +75,11 @@ const getAllLeaderboardsForGuild = async (models, guild_id) => {
 
 const pref = 'https://www.speedrun.com/api/v1/'
 
+
+const variableListToURLParameters = (variables) => {
+    return variables.map(variable => `var-${variable.variable_id}=${variable.value}`).join('&');
+}
+
 /*
     leaderboard needs the following attributes at least
     {
@@ -87,31 +92,44 @@ const pref = 'https://www.speedrun.com/api/v1/'
     }
 */
 const getLeaderboardName = async (leaderboard) => {
-    // let req = `${pref}leaderboards/${leaderboard.game_id}/category/${leaderboard.category_id}?embed=game,category,variables&${
-    //     variableListToURLParamaters(leaderboard.variables)
-    // }`;
-    let req = `${pref}games/${leaderboard.game_id}?embed=categories,variables`;
-    const game = await fetch(req).then(res => res.json());
+    let req = `${pref}leaderboards/${leaderboard.game_id}/category/${leaderboard.category_id}?embed=game,category,variables,players&top=1&${
+        variableListToURLParameters(leaderboard.variables)
+    }`;
+    // let req = `${pref}games/${leaderboard.game_id}/records?scope=full-game&top=1&embed=categories,variables`;
+    const lb = await fetch(req).then(res => res.json());
     
-    // console.log(JSON.stringify(res, null, 2));
+    console.log(JSON.stringify(lb.data, null, 2));
+    // console.log(lb.runs.map(r => r.run.players.))
+    // return req;
     // res.data.names.international
     // res.data.categories.data[...].id
     // res.data.variables.data.
 
-    let name = `${game.data.names.international} - ${game.data.categories.data.find(c => c.id === leaderboard.category_id).name}`;
+    let name = `${lb.data.game.data.names.international} - ${lb.data.category.data.name}`;
 
     if(leaderboard.variables && leaderboard.variables.length > 0) {
         name += ` (${
             // Just so much fun
             leaderboard.variables.map(v => {
-                return game.data.variables.data.find(t => t.id === v.variable_id).values.values[v.value].label;
+                return lb.data.variables.data.find(t => t.id === v.variable_id).values.values[v.value].label;
             }).join(', ')
         })`;
     }
 
+    name += ` by: ${getPlayersFromRuns(lb.data.runs, lb.data.players)}`;
+
     return name;
 }
 
-const variableListToURLParameters = async (variables) => {
-    return leaderboard.variables.map(variable => `var-${variable.variable_id}=${variable.value}`).join('&');
+const getPlayersFromRuns = (runs, players) => {
+    return runs.map(run => `[${run.run.players.map(p => players.data.find(p_ => p_.id === p.id).names.international)} in ${timeFormatting(run.run.times.primary_t)}]`).join(', ');
+}
+
+const timeFormatting = (time) => {
+    let hours = Math.floor(time/3600);
+    let minutes = Math.floor(time / 60) % 60;
+    let seconds = Math.floor(time % 60);
+    let milli = Math.round((time % 1) * 1000)
+    return (hours !== 0 ? `${hours}:${(minutes < 10 ? '0' : '')}` : '') 
+    + `${minutes}:${seconds}${milli !== 0 ? '.'+milli : ''}`;
 }
