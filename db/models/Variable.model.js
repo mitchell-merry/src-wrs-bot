@@ -32,7 +32,7 @@ export default class Variable extends Model {
     }
 
     static associate(models) {
-        this.belongsTo(models.Leaderboard, {
+        this.Leaderboard = this.belongsTo(models.Leaderboard, {
             foreignKey: "lb_id",
             targetKey: "lb_id"
         });
