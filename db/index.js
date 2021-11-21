@@ -1,11 +1,10 @@
 import Sequelize from 'sequelize';
 import * as m from './models';
-import config from '../config';
 
 const TESTING = true;
 
 export const sync = async (sequelize) => {
-    console.log(Object.keys(m))
+
     const models = {
         Guild: m.Guild.init(sequelize),
         Player: m.Player.init(sequelize),
@@ -50,8 +49,8 @@ export const connect = async () => {
 const dummyData = async (models) => {
     const { Guild, Leaderboard, Variable } = models;
 
-    console.log(Object.entries(Guild));
-    console.log(Object.entries(Leaderboard));
+    // console.log(Object.entries(Guild));
+    // console.log(Object.entries(Leaderboard));
 
     await Guild.create({
         guild_id: '705780146216370326',
@@ -78,24 +77,24 @@ const dummyData = async (models) => {
             game_id: 'y654kg7d', 
             category_id: 'xd1l9xrk',
             // TODO figure out the mystery of the century - why does this nested include seemingly get ignored?
-            // Variables: [{
-            //     variable_id: 'ylqkj9ml',
-            //     value: 'zqorkrpq'
-            // }],
+            Variables: [{
+                variable_id: 'ylqkj9ml',
+                value: 'zqorkrpq'
+            }],
         }]
     }, {
-        include: [ Leaderboard ]
+        // include: [ Leaderboard ]
         // https://sequelize.org/master/manual/creating-with-associations.html
-        // include: [{
-        //     model: Leaderboard,
-        //     association: Guild.associations.Leaderboards,
-        //     include: [{ 
-        //         model: Variable,
-        //         association: Leaderboard.associations.Variables
-        //     }]
-        //     // include: [ Variable ]
-        //     // include: [{ association: Leaderboard.Variables }]
-        // }],
+        include: [{
+            model: Leaderboard,
+            association: Guild.associations.Leaderboards,
+            include: [{ 
+                model: Variable,
+                association: Leaderboard.associations.Variables
+            }]
+            // include: [ Variable ]
+            // include: [{ association: Leaderboard.Variables }]
+        }],
         // include: [{ 
         //     association: Guild.Leaderboards,
         //     include: [ Leaderboard.Variables ]
