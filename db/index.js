@@ -47,15 +47,15 @@ export const connect = async () => {
 }
 
 const dummyData = async (models) => {
-    const { Guild, Leaderboard, Variable } = models;
+    const { Guild, Leaderboard, Variable, Player } = models;
 
     // console.log(Object.entries(Guild));
     // console.log(Object.entries(Leaderboard));
 
     await Guild.create({
         guild_id: '705780146216370326',
-        wr_role_color: 15844367, 
         hoisted_role_id: '865414932912013333',
+        role_default_color: 15844367, 
         track_sum: true,
         Leaderboards: [{
             game_id: 'm1zj9r06', 
@@ -108,7 +108,22 @@ const dummyData = async (models) => {
         lb_id: 7,
         variable_id: 'ylqkj9ml',
         value: 'zqorkrpq'
-    })
+    });
+
+    // Manually add user data (limitation of SRC api, hopefully temporary)
+    await Player.bulkCreate([{
+        player_id: 'qjoz6gn8',
+        discord_id: '270856336466509835'
+    }, {
+        player_id: '8en3o968',
+        discord_id: '234395307759108106'
+    }, {
+        player_id: '8vogmevx',
+        discord_id: '339254240012664832'
+    }, {
+        player_id: 'jop6zmex',
+        discord_id: '705780864549650493'
+    }]);
 }
 
 const syncGuilds = async (guilds) => {

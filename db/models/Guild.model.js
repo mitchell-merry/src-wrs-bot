@@ -20,14 +20,18 @@ export default class Guild extends Model {
                 field: "hoisted_role_id",
                 type: DataTypes.STRING,
             },
-            wr_role_color: {
-                field: "wr_role_color",
+            role_default_color: {
+                field: "role_default_color",
                 type: DataTypes.INTEGER,
             },
             track_sum: {
                 field: "track_sum",
                 type: DataTypes.BOOLEAN,
-            }
+            },
+            // display: {
+            //     field: "display",
+            //     type: DataTypes.ENUM('normal', 'embed', 'code_block')
+            // }
         }, {
             tableName: "Guild",
             underscored: true,

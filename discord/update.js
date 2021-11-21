@@ -86,7 +86,7 @@ const getLeaderboardInformationAndAttachToGuildObject = async (guild) => {
         
         // Convert raw data to usable information
         leaderboard.lb_name = getLeaderboardNameFromRaw(leaderboard);
-        leaderboard.record_runs = getRunsFromRaw(leaderboard);
+        leaderboard.record_runs = await getRunsFromRaw(leaderboard);
         leaderboard.primary_t = getRunTimeFromRaw(leaderboard);
         leaderboard.formatted_t = formatTime(leaderboard.primary_t);
 
@@ -144,14 +144,20 @@ const getLeaderboardNameFromRaw = (leaderboard) => {
 }
 
 // Uses raw data to return run information as defined in getLeaderboardInformationAndAttachToGuildObject
-const getRunsFromRaw = (leaderboard) => {
-    return leaderboard.raw.data.runs.map(run => run.run.players.map(p => { 
-        let found_player = leaderboard.raw.data.players.data.find(p_ => p_.id === p.id);
-        return {
-            player_id: found_player.id,
-            player_name: found_player.names.international
+const getRunsFromRaw = async (leaderboard) => {
+    return await Promise.all(leaderboard.raw.data.runs.map(async (run) => ({
+        run_id: run.run.id,
+        run_video: run.run.videos.links[0].uri,
+        players: await Promise.all(run.run.players.map(async (p) => { 
+            let found_player = leaderboard.raw.data.players.data.find(p_ => p_.id === p.id);
+            
+            return config.sequelize.models.Player.findByPk(found_player.id).then(data => ({
+                player_id: found_player.id,
+                discord_id: data.dataValues.discord_id,
+                player_name: found_player.names.international
+            }));
         }
-    }));
+    ))})));
 }
 
 // Uses raw data to get the primary_t of the top run
