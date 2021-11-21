@@ -27,7 +27,7 @@ export const updateGuild = async (guild_id) => {
             // Create a new role with default settings
             role = await guild.discord.roles.create({
                 name: leaderboard.lb_name,
-                color: leaderboard.role_default_color,
+                color: guild.role_default_color,
                 hoist: true,
                 position: 1, // TODO
                 mentionable: false,
@@ -41,7 +41,14 @@ export const updateGuild = async (guild_id) => {
                 }
             });
             console.log(`[UPDATE-GUILD:${guild_id}] Role for "${leaderboard.lb_name}" created & saved.`);
-        } else console.log(`[UPDATE-GUILD:${guild_id}] Role for "${leaderboard.lb_name}" found!`);
+        } else {
+            // Remove everyone that currently has the role
+            console.log(`[UPDATE-GUILD:${guild_id}] Role for "${leaderboard.lb_name}" found! Removing all members of the role...`);
+
+            console.log(`[UPDATE-GUILD:${guild_id}] Role members removed for "${leaderboard.lb_name}".`);
+        }
+
+        // Assign role to current record holder
     }
 
     console.log(`[UPDATE-GUILD:${guild_id}] Guild has been updated.`);

@@ -85,22 +85,8 @@ const dummyData = async (models) => {
             }],
         }]
     }, {
-        // include: [ Leaderboard ]
-        // https://sequelize.org/master/manual/creating-with-associations.html
-        include: [{
-            model: Leaderboard,
-            association: Guild.associations.Leaderboards,
-            include: [{ 
-                model: Variable,
-                association: Leaderboard.associations.Variables
-            }]
-            // include: [ Variable ]
-            // include: [{ association: Leaderboard.Variables }]
-        }],
-        // include: [{ 
-        //     association: Guild.Leaderboards,
-        //     include: [ Leaderboard.Variables ]
-        // }],
+        // https://trello.com/c/t35fchfd/10-variable-nested-include-in-create-statement-being-ignored        
+        include: [ Leaderboard ]
     });
     
     // temp (stand-in for the above bug)
