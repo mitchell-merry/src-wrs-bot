@@ -19,12 +19,11 @@ export const receiveDM = async (message) => {
         const player_id = res?.data?.id;
         if(!player_id) await message.channel.send("Invalid API key. Please retrieve your API key from https://www.speedrun.com/api/auth, and do not regenerate your key until the confirmation message is sent.");
         else {
-            link(message.author.id, player_id);
-            await message.channel.send(`Success! Your discord account has been associated with ${res.data.weblink}.\n\n
-                If you are in a discord server which tracks the leaderboard for a WR you have, either ask an admin to update the records or update it yourself with --update.\n\n
-                If you would like to unlink this account with the speedrun.com account listed above, send "unlink" to this account at any time, and the association will be removed, and future updates to records the speedrun.com has will not be linked to your discord account.\n\n
-                If you would like to link this account to a different speedrun.com account, send a new API key in these DMs at any time.`
-            );
+            const l_stat = await link(message.author.id, player_id);
+            
+            if(l_stat) await message.channel.send(`Success! Your discord account has been associated with ${res.data.weblink}.\n\nIf you are in a discord server which tracks the leaderboard for a WR you have, either ask an admin to update the records or update it yourself with --update.\n\nIf you would like to unlink this account with the speedrun.com account listed above, send "unlink" to this account at any time, and the association will be removed, and future updates to records the speedrun.com has will not be linked to your discord account.\n\nIf you would like to link this account to a different speedrun.com account, send a new API key in these DMs at any time.`);
+            
+            else await message.channel.send(`A speedrun.com account is already associated with this user. Please unlink your account first with 'unlink' if you wish to associate with a different account.`);
         }
     } else {
         await message.channel.send('Invalid API key. Send \'unlink\' to unlink a currently associated speedrun.com account (if any). Or, send your API key from https://www.speedrun.com/api/auth to link your discord account with your speedrun.com account. If you believe this is in error, please contact diggitydingdong#3084.');
@@ -32,7 +31,6 @@ export const receiveDM = async (message) => {
 };
 
 // Unlink discord account from any speedrun.com account
-// Returns some eror rmayb.
 const unlink = async (discord_id) => {
     const { Player } = config.sequelize.models;
     console.log(`[UNLINK] Unlinking account ${discord_id}`);
@@ -42,5 +40,10 @@ const unlink = async (discord_id) => {
 const link = async (discord_id, player_id) => {
     const { Player } = config.sequelize.models;
     console.log(`[LINK] Linking account ${discord_id} to ${player_id}`);
-    await Player.create({ discord_id, player_id });
+    try {
+        await Player.create({ discord_id, player_id });
+    } catch (err) {
+        return false;
+    }
+    return true;
 }
