@@ -1,6 +1,11 @@
 import fetch from 'node-fetch';
 import config from './config';
 
+export const getProfileFromAPIKey = async (api_key) => {
+    return await fetch(`${config.api_prefix}profile`, { headers: {"X-API-Key": api_key} })
+        .then(res => res.json());
+}
+
 export const getGuildObject = async (guild_id) => {
     const { Guild, Leaderboard, Variable } = config.sequelize.models;
 

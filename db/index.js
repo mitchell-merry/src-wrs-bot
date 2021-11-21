@@ -22,7 +22,7 @@ export const sync = async (sequelize) => {
 
     // logModelAssociations(models);
 
-    if(TESTING) await dummyData(models);
+    // if(TESTING) await dummyData(models);
 }
 
 export const connect = async () => {
