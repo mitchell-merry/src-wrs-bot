@@ -10,21 +10,24 @@ export const receiveDM = async (message) => {
     if(message.content.toLowerCase() === 'unlink') {
         const unl_stat = await unlink(message.author.id);
         
-        if(unl_stat) message.channel.send('Successfully unlinked TODO write message');
-        else message.channel.send('Your account is not currently linked to a speedrun.com account. TODO write more');
+        if(unl_stat) message.channel.send('Your account was successfully unlinked. To re-link your account, send your API key in here at any time. You can get your API key from https://www.speedrun.com/api/auth.');
+        else message.channel.send('Your account is not currently linked to a speedrun.com account.');
     } // Check if message fits form of API key.
     else if(APIkey.test(message.content)) {
-        await message.channel.send('Im am cejhkning.. now your aPI key thanks.');
+        await message.channel.send('Checking API key...');
         const res = await getProfileFromAPIKey(message.content);
         const player_id = res?.data?.id;
-        if(!player_id) await message.channel.send("Invalid API key. Please fgive good next tim.e");
+        if(!player_id) await message.channel.send("Invalid API key. Please retrieve your API key from https://www.speedrun.com/api/auth, and do not regenerate your key until the confirmation message is sent.");
         else {
-            await message.channel.send(`Oh! Found this user: ${res.data.weblink}. Cool. I associate now. budy`);
             link(message.author.id, player_id);
-            await message.channel.send('Grats G. You a real one')
+            await message.channel.send(`Success! Your discord account has been associated with ${res.data.weblink}.\n\n
+                If you are in a discord server which tracks the leaderboard for a WR you have, either ask an admin to update the records or update it yourself with --update.\n\n
+                If you would like to unlink this account with the speedrun.com account listed above, send "unlink" to this account at any time, and the association will be removed, and future updates to records the speedrun.com has will not be linked to your discord account.\n\n
+                If you would like to link this account to a different speedrun.com account, send a new API key in these DMs at any time.`
+            );
         }
     } else {
-        await message.channel.send('I nt sure what uyou want/?');
+        await message.channel.send('Invalid API key. Send \'unlink\' to unlink a currently associated speedrun.com account (if any). Or, send your API key from https://www.speedrun.com/api/auth to link your discord account with your speedrun.com account. If you believe this is in error, please contact diggitydingdong#3084.');
     }
 };
 
