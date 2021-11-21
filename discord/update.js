@@ -23,10 +23,10 @@ export const updateGuild = async (guild_id) => {
 
         // if the role doesn't exist or can't be found
         if(!role) {
-            console.log(`[UPDATE-GUILD:${guild_id}] Role for "${leaderboard.lb_name}" doesn't exist, creating...`);
+            console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Role doesn't exist, creating...`);
             // Create a new role with default settings
             role = await guild.discord.roles.create({
-                name: leaderboard.lb_name,
+                name: leaderboard.lb_name + ' WR',
                 color: guild.role_default_color,
                 hoist: true,
                 position: 1, // TODO
@@ -40,15 +40,27 @@ export const updateGuild = async (guild_id) => {
                     guild_id
                 }
             });
-            console.log(`[UPDATE-GUILD:${guild_id}] Role for "${leaderboard.lb_name}" created & saved.`);
         } else {
             // Remove everyone that currently has the role
-            console.log(`[UPDATE-GUILD:${guild_id}] Role for "${leaderboard.lb_name}" found! Removing all members of the role...`);
+            console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Role found! Removing all members of the role...`);
 
-            console.log(`[UPDATE-GUILD:${guild_id}] Role members removed for "${leaderboard.lb_name}".`);
+            role.members.forEach(async (member) => {
+                console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Removing role from ${member.user.username}#${member.user.discriminator}...`);
+                await member.roles.remove(role);
+            });
         }
 
-        // Assign role to current record holder
+        // Assign role to current record holders
+        console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Adding record holders to the role...`);
+
+        let player_discord_ids = [] // list of discord ids to assign the role to
+        leaderboard.record_runs.forEach(run => {
+            player_discord_ids = [...player_discord_ids, ...run.players.filter(p => !!p.discord_id).map(p => p.discord_id)];
+        });
+
+        player_discord_ids.forEach(discord_id => {
+            guild.discord.members.cache.get(discord_id).roles.add(role);
+        });
     }
 
     console.log(`[UPDATE-GUILD:${guild_id}] Guild has been updated.`);

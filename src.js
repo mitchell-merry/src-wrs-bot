@@ -45,11 +45,15 @@ export const getGuildObject = async (guild_id) => {
             // at the same time. In the bottom example, the WR is tied between two runs, which each have
             // two players. This is a rare case, but the most extreme.
             // See below for the structure of a player.
-            record_runs: [[ 
-                player_1, player_2, ...
-            ], [
-                player_3, player_4, ...
-            ]],
+            record_runs: [{
+                run_id: ...,
+                run_video: ...,
+                players: [ player_1, player_2, ... ], 
+            }, {
+                run_id: ...,
+                run_video: ...,
+                players: [ player_3, player_4, ... ], 
+            }],
             primary_t: // Added - primary time stored for the run. 
             formatted_t: // Added - formatted version of primary_t. One of these might be removed later depending on use cases, but I'm not there yet.
             role_id: // Added - the role_id (from TrackedLeaderboard) of this leaderboard on the guild.
@@ -58,7 +62,8 @@ export const getGuildObject = async (guild_id) => {
 
     Player object:
     player_x: {
-        player_id: ...,   // used to associate with discord accoutn
+        player_id: ...,   // used to associate with discord account
+        discord_id: ...,  // null if no associated discord account
         player_name: ..., // speedrun.com name
     }
 */
@@ -113,7 +118,7 @@ const variableListToURLParameters = (variables) => {
 const getLeaderboardNameFromRaw = (leaderboard) => {
     let name = `${leaderboard.raw.data.game.data.names.international} - ${leaderboard.raw.data.category.data.name}`;
     
-    // Only add parenthesis if leaderbaord has variables
+    // Only add parenthesis if leaderboard has variables
     if(leaderboard.Variables && leaderboard.Variables.length > 0) {
         name += ` (${
             // Just so much fun
@@ -136,7 +141,7 @@ const getRunsFromRaw = async (leaderboard) => {
             
             return config.sequelize.models.Player.findByPk(found_player.id).then(data => ({
                 player_id: found_player.id,
-                discord_id: data.dataValues.discord_id,
+                discord_id: data?.dataValues.discord_id,
                 player_name: found_player.names.international
             }));
         }

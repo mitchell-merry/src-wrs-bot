@@ -49,9 +49,6 @@ export const connect = async () => {
 const dummyData = async (models) => {
     const { Guild, Leaderboard, Variable, Player } = models;
 
-    // console.log(Object.entries(Guild));
-    // console.log(Object.entries(Leaderboard));
-
     await Guild.create({
         guild_id: '867962530964848680',
         hoisted_role_id: '911883658250575913',
@@ -76,6 +73,9 @@ const dummyData = async (models) => {
             game_id: '9do88le1', 
             category_id: 'wk60q8rk',
         }, {
+            game_id: 'v1poqvp6', 
+            category_id: '5dw4355k',
+        }, {
             game_id: 'y654kg7d', 
             category_id: 'xd1l9xrk',
             // TODO figure out the mystery of the century - why does this nested include seemingly get ignored?
@@ -91,7 +91,7 @@ const dummyData = async (models) => {
     
     // temp (stand-in for the above bug)
     await Variable.create({
-        lb_id: 7,
+        lb_id: 8,
         variable_id: 'ylqkj9ml',
         value: 'zqorkrpq'
     });
