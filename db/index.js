@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import * as m from './models';
 
-const TESTING = true;
+const TESTING = false;
 
 export const sync = async (sequelize) => {
 
@@ -20,7 +20,7 @@ export const sync = async (sequelize) => {
     
     await sequelize.sync({ force: TESTING });
 
-    logModelAssociations(models);
+    // logModelAssociations(models);
 
     if(TESTING) await dummyData(models);
 }
@@ -53,9 +53,9 @@ const dummyData = async (models) => {
     // console.log(Object.entries(Leaderboard));
 
     await Guild.create({
-        guild_id: '705780146216370326',
-        hoisted_role_id: '865414932912013333',
-        role_default_color: 15844367, 
+        guild_id: '867962530964848680',
+        hoisted_role_id: '911883658250575913',
+        role_default_color: 'YELLOW', 
         track_sum: true,
         Leaderboards: [{
             game_id: 'm1zj9r06', 
@@ -116,13 +116,13 @@ const dummyData = async (models) => {
         discord_id: '270856336466509835'
     }, {
         player_id: '8en3o968',
-        discord_id: '234395307759108106'
+        discord_id: '229503851697405953'
     }, {
         player_id: '8vogmevx',
-        discord_id: '339254240012664832'
+        discord_id: '880753493835669564'
     }, {
         player_id: 'jop6zmex',
-        discord_id: '705780864549650493'
+        discord_id: '775882249597616158'
     }]);
 }
 

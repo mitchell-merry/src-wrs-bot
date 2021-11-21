@@ -1,5 +1,5 @@
-import { Client } from 'discord.js';
-const client = new Client({ intents: [] });
+import { Client, Intents } from 'discord.js';
+const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES ] });
 
 import { token } from './auth';
 import * as db from './db/index.js';
@@ -21,7 +21,7 @@ const init = async () => {
     config.sequelize = await db.connect();
     console.log("Database successfully initialised.");
 
-    updateGuild('705780146216370326');
+    updateGuild('867962530964848680');
 
     // console.log(await getAllLeaderboardsForGuild(sequelize.models, '705780146216370326'));
 

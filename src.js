@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import config from './config';
 
 export const getGuildObject = async (guild_id) => {
     const { Guild, Leaderboard, Variable } = config.sequelize.models;
@@ -7,7 +8,6 @@ export const getGuildObject = async (guild_id) => {
         include: {
             model: Leaderboard,
             through: { attributes: [ 'role_id' ] },
-            attributes: { exclude: [ 'lb_id' ] },
             include: [{ 
                 model: Variable,
                 attributes: { exclude: ['lb_id'] }

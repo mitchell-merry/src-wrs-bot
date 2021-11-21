@@ -22,7 +22,7 @@ export default class Guild extends Model {
             },
             role_default_color: {
                 field: "role_default_color",
-                type: DataTypes.INTEGER,
+                type: DataTypes.STRING,
             },
             track_sum: {
                 field: "track_sum",
