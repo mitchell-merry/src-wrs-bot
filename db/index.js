@@ -54,7 +54,9 @@ const dummyData = async (models) => {
 
     await Guild.create({
         guild_id: '705780146216370326',
-        wr_role_color: 15844367,
+        wr_role_color: 15844367, 
+        hoisted_role_id: '865414932912013333',
+        track_sum: true,
         Leaderboards: [{
             game_id: 'm1zj9r06', 
             category_id: 'wkp9pl02',

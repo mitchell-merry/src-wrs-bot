@@ -16,9 +16,13 @@ export default class Guild extends Model {
                 field: "wr_message_id",
                 type: DataTypes.STRING,
             },
+            hoisted_role_id: {
+                field: "hoisted_role_id",
+                type: DataTypes.STRING,
+            },
             wr_role_color: {
                 field: "wr_role_color",
-                type: DataTypes.STRING,
+                type: DataTypes.INTEGER,
             },
             track_sum: {
                 field: "track_sum",
