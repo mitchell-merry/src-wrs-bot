@@ -24,7 +24,7 @@ const getGuildObject = async (guild_id) => {
     const G = await Guild.findByPk(guild_id, {
         include: {
             model: Leaderboard,
-            through: { attributes: [ ] },
+            through: { attributes: [ 'role_id' ] },
             attributes: { exclude: [ 'lb_id' ] },
             include: [{ 
                 model: Variable,
@@ -35,8 +35,10 @@ const getGuildObject = async (guild_id) => {
 
     const guild = { ...G.dataValues };
     guild.Leaderboards = guild.Leaderboards.map(lb => {
-        const { Variables, ...data } = lb.dataValues;
-        return { ...data, Variables: Variables.map(v => v.dataValues )};
+        const { Variables, TrackedLeaderboard, ...data } = lb.dataValues;
+        return { ...data, ...TrackedLeaderboard.dataValues,
+            Variables: Variables.map(v => v.dataValues), 
+        };
     });
 
     await getLeaderboardInformationAndAttachToGuildObject(guild);
@@ -65,7 +67,7 @@ const getGuildObject = async (guild_id) => {
             ]],
             primary_t: // Added - primary time stored for the run. 
             formatted_t: // Added - formatted version of primary_t. One of these might be removed later depending on use cases, but I'm not there yet.
-            
+            role_id: // Added - the role_id (from TrackedLeaderboard) of this leaderboard on the guild.
         }]
     }
 
@@ -75,8 +77,6 @@ const getGuildObject = async (guild_id) => {
     }
 */
 const getLeaderboardInformationAndAttachToGuildObject = async (guild) => {
-    console.log(JSON.stringify(guild, null, 2));
-
     for(let i = 0; i < guild.Leaderboards.length; i++) {
         let leaderboard = guild.Leaderboards[i];
         leaderboard.raw = await fetchBoardInformation(leaderboard);
