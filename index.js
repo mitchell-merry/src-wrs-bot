@@ -45,4 +45,9 @@ client.on('messageCreate', (message) => {
 
     if(message.channel.type === 'DM') receiveDM(message);
 
+    if(message.content.startsWith(config.command_prefix)) {
+        const command = message.content.split(' ')[0].slice(config.command_prefix.length).toLowerCase();
+        // is command
+        if(command === 'update') updateGuild(message.guild.id);
+    }
 });
