@@ -18,6 +18,7 @@ import config from './config';
 import { updateGuild } from './discord/update';
 import { receiveDM } from './discord/associate';
 import lang from './lang';
+import { handleTrack } from './discord/track';
 
 // Initialisation code to be run after the discord client has logged in.
 const init = async () => {
@@ -35,7 +36,10 @@ const init = async () => {
     console.log("Database successfully initialised.");
 
     // await updateGuild('867962530964848680');
+
     config.ready = true;
+    console.log("Bot is ready.");
+
 };
 
 client.once('ready', init);
@@ -47,14 +51,17 @@ client.on('messageCreate', async (message) => {
     if(message.channel.type === 'DM') receiveDM(message);
     // is command
     else if(message.content.startsWith(config.command_prefix)) {
-        const command = message.content.split(' ')[0].slice(config.command_prefix.length).toLowerCase();
-        if(command === 'update') {
+        const args = message.content.toLowerCase().split(' ');
+        const command = args[0].slice(config.command_prefix.length);
+        if (command === 'update') {
             await updateGuild(message.guild.id);
             await message.channel.send(lang.UPDATE_SUCCESSFUL);
-        }
-        else if(command === 'associate') {
+        } else if (command === 'associate') {
             await message.author.send(lang.LINK_INSTRUCTIONS);
             await message.channel.send(lang.LINK_INSTRUCTIONS_SENT);
+        } else if (command === 'track') {
+            if (args.length === 1) message.channel.send(lang.TRACK_NOT_ENOUGH_ARGS)
+            else handleTrack(args[1], message.channel);
         }
     }
 });
