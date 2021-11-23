@@ -1,7 +1,8 @@
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { MessageActionRow, MessageButton } from "discord.js";
-import config from "../config"
-import lang from "../lang"
-import { getLeaderboardInformationFromLink } from "../src";
+import config from "../config.js"
+import lang from "../lang.js"
+import { getLeaderboardInformationFromLink } from "../src.js";
 
 /* handle adding tracked leaderboards for guilds */
 
@@ -33,4 +34,18 @@ export const handleTrack = async (link, channel) => {
 
 const validLink = (link) => {
     return true;
+}
+
+export default {
+    data: new SlashCommandBuilder()
+        .setName('track')
+        .setDescription('Track leaderboard.')
+        .addStringOption(option =>
+            option.setName('link')
+                    .setDescription('A link to the game and category base leaderboard to track. The category specifier is required.')
+                    .setRequired(true)
+        ),
+    execute: async (interaction) => {
+        handleTrack(args[1], message.channel);
+    }
 }
