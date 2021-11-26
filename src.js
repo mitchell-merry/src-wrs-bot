@@ -1,5 +1,12 @@
 import fetch from 'node-fetch';
-import config from './config';
+import config from './config.js';
+
+export const getIdFromUsername = async (src_name) => {
+
+    return await fetch(`${config.api_prefix}users/${src_name}`)
+        .then(res => res.json())
+        .then(res => res.data.id);
+}
 
 export const getLeaderboardInformationFromLink = (link) => {
     // https://www.speedrun.com/feed_me_billy#Any
@@ -9,7 +16,7 @@ export const getLeaderboardInformationFromLink = (link) => {
     let category = leaderboard_info[1]
     if(!category) return Promise.reject("No category provided.");
     
-    return fetch(`${config.api_prefix}leaderboards/${game}/category/${category}?embed=variables&top=1`).then(res => res.json());
+    return fetch(`${config.api_prefix}leaderboards/${game}/category/${category}?embed=variables,game,category&top=1`).then(res => res.json());
 }
 
 export const getProfileFromAPIKey = async (api_key) => {
@@ -132,17 +139,22 @@ const variableListToURLParameters = (variables) => {
     }
 */
 const getLeaderboardNameFromRaw = (leaderboard) => {
-    let name = `${leaderboard.raw.data.game.data.names.international} - ${leaderboard.raw.data.category.data.name}`;
-    
-    // Only add parenthesis if leaderboard has variables
-    if(leaderboard.Variables && leaderboard.Variables.length > 0) {
-        name += ` (${
-            // Just so much fun
-            leaderboard.Variables.map(v => {
-                return leaderboard.raw.data.variables.data.find(t => t.id === v.variable_id).values.values[v.value].label;
-            }).join(', ')
-        })`;
-    }
+    const gameName = leaderboard.raw.data.game.data.names.international;
+    const categoryName = leaderboard.raw.data.category.data.name;
+    // woo!
+    const valueNames = leaderboard.Variables.map(v => leaderboard.raw.data.variables.data.find(t => t.id === v.variable_id).values.values[v.value].label);
+
+    return buildLeaderboardName(gameName, categoryName, valueNames);
+}
+
+// Forms a leaderboard name
+// gameName = string
+// categoryName = string
+// valueNames = string[]
+export const buildLeaderboardName = (gameName, categoryName, valueNames) => {
+    let name = `${gameName} - ${categoryName}`;
+
+    if(valueNames && valueNames.length > 0) name += ` (${valueNames.join(', ')})`;
 
     return name;
 }

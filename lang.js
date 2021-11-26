@@ -11,6 +11,8 @@ export default {
     'UPDATE_SUCCESSFUL': 'Guild has been successfully updated!',
 
     'TRACK_NOT_ENOUGH_ARGS': 'Missing arguments. Correct usage is "--track {link}", where {link} is a link to the category you\'d like to track (e.g. https://www.speedrun.com/sm64#70_Star).',
-    'TRACK_BAD_LINK': 'Bad link. Your link must be in the form of "https://www.speedrun.com/GAME#CATEGORY" ("#Category" is required, even for games with a single category / the default category).',
+    'TRACK_BAD_LINK': 'Bad link. Your link must be in the form of "<https://www.speedrun.com/GAME#CATEGORY>" ("#CATEGORY" is required, even for games with a single category / for the default category).',
     'TRACK_GOOD_LINK': 'Fetching information...',
+    'TRACK_INFO_FOUND': 'Found game and category!',
+    'TRACK_GAME_NOT_FOUND': (data) => `Game ${data} could not be found.`,
 };
