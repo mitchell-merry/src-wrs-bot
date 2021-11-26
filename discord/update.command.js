@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import config from '../config.js';
+import lang from '../lang.js';
 import { getGuildObject } from '../src.js';
 
 /*
@@ -72,7 +73,8 @@ export default {
         .setName('update')
         .setDescription('Update this guild\'s world record information.'),
     execute: async (interaction) => {
-        await updateGuild(message.guild.id);
-        await interaction.reply(lang.UPDATE_SUCCESSFUL);
+        await interaction.deferReply();
+        await updateGuild(interaction.guild.id);
+        await interaction.editReply(lang.UPDATE_SUCCESSFUL);
     }
 }

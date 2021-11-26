@@ -73,28 +73,13 @@ client.on('interactionCreate', async (interaction) => {
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}    
 
 });
 
-// client.on('messageCreate', async (message) => {
-//     if(message.author.bot || !config.ready) return;
+client.on('messageCreate', async (message) => {
+    if(message.author.bot || !config.ready) return;
 
-//     if(message.channel.type === 'DM') receiveDM(message);
-//     // is command
-//     else if(message.content.startsWith(config.command_prefix)) {
-//         const args = message.content.toLowerCase().split(' ');
-//         const command = args[0].slice(config.command_prefix.length);
-//         if (command === 'update') {
-//             await updateGuild(message.guild.id);
-//             await message.channel.send(lang.UPDATE_SUCCESSFUL);
-//         } else if (command === 'associate') {
-//             await message.author.send(lang.LINK_INSTRUCTIONS);
-//             await message.channel.send(lang.LINK_INSTRUCTIONS_SENT);
-//         } else if (command === 'track') {
-//             if (args.length === 1) message.channel.send(lang.TRACK_NOT_ENOUGH_ARGS)
-//             else handleTrack(args[1], message.channel);
-//         }
-//     }
-// });
+    if(message.channel.type === 'DM') receiveDM(message);
+});

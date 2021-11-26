@@ -55,7 +55,7 @@ export default {
         .setName('associate')
         .setDescription('Sends a DM with instructions on how to associate your account.'),
     execute: async (interaction) => {
-        await interaction.author.send(lang.LINK_INSTRUCTIONS);
-        await interaction.reply(lang.LINK_INSTRUCTIONS)
+        await interaction.user.send(lang.LINK_INSTRUCTIONS);
+        await interaction.reply({ content: lang.LINK_INSTRUCTIONS_SENT, ephemeral: true })
     }
 };

@@ -135,7 +135,7 @@ const getLeaderboardNameFromRaw = (leaderboard) => {
     const gameName = leaderboard.raw.data.game.data.names.international;
     const categoryName = leaderboard.raw.data.category.data.name;
     // woo!
-    const valueNames = leaderboard.Variables.map(v => leaderboard.raw.data.variables.data.find(t => t.id === v.id).values.values[v.value].label);
+    const valueNames = leaderboard.Variables.map(v => leaderboard.raw.data.variables.data.find(t => t.id === v.variable_id).values.values[v.value].label);
 
     return buildLeaderboardName(gameName, categoryName, valueNames);
 }

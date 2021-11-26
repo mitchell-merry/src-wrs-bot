@@ -20,9 +20,9 @@ export const sync = async (sequelize) => {
     
     await sequelize.sync({ force: TESTING });
 
-    // logModelAssociations(models);
+    logModelAssociations(models);
 
-    // if(TESTING) await dummyData(models);
+    if(TESTING) await dummyData(models);
 }
 
 export const connect = async () => {
@@ -79,7 +79,7 @@ const dummyData = async (models) => {
             game_id: 'y654kg7d', 
             category_id: 'xd1l9xrk',
             // TODO figure out the mystery of the century - why does this nested include seemingly get ignored?
-            Variables: [{
+            Variable: [{
                 variable_id: 'ylqkj9ml',
                 value: 'zqorkrpq'
             }],
@@ -90,11 +90,11 @@ const dummyData = async (models) => {
     });
     
     // temp (stand-in for the above bug)
-    await Variable.create({
-        lb_id: 8,
-        variable_id: 'ylqkj9ml',
-        value: 'zqorkrpq'
-    });
+    // await Variable.create({
+    //     lb_id: 8,
+    //     variable_id: 'ylqkj9ml',
+    //     value: 'zqorkrpq'
+    // });
 
     // Manually add user data (limitation of SRC api, hopefully temporary)
     await Player.bulkCreate([{
