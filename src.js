@@ -1,6 +1,13 @@
 import fetch from 'node-fetch';
 import config from './config.js';
 
+export const getIdFromUsername = async (src_name) => {
+
+    return await fetch(`${config.api_prefix}users/${src_name}`)
+        .then(res => res.json())
+        .then(res => res.data.id);
+}
+
 export const getLeaderboardInformationFromLink = (link) => {
     // https://www.speedrun.com/feed_me_billy#Any
     let leaderboard_info = link.split('/');

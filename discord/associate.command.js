@@ -39,7 +39,7 @@ const unlink = async (discord_id) => {
     return (await Player.destroy({ where: { discord_id } })) > 0;
 }
 
-const link = async (discord_id, player_id) => {
+export const link = async (discord_id, player_id) => {
     const { Player } = config.sequelize.models;
     console.log(`[LINK] Linking account ${discord_id} to ${player_id}`);
     try {

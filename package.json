@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-json-modules --experimental-specifier-resolution=node index",
-    "deployCommands": "node deployCommands",
+    "deployCommands": "node --experimental-specifier-resolution=node deployCommands",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
