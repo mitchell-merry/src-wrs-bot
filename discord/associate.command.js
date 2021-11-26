@@ -33,7 +33,7 @@ export const receiveDM = async (message) => {
 };
 
 // Unlink discord account from any speedrun.com account
-const unlink = async (discord_id) => {
+export const unlink = async (discord_id) => {
     const { Player } = config.sequelize.models;
     console.log(`[UNLINK] Unlinking account ${discord_id}`);
     return (await Player.destroy({ where: { discord_id } })) > 0;
