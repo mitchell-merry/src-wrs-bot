@@ -40,6 +40,8 @@ const init = async () => {
     config.sequelize = await db.connect();
     console.log("Database successfully initialised.");
 
+    await db.syncGuilds(client.guilds.cache);
+
     // await updateGuild('867962530964848680');
 
     config.ready = true;

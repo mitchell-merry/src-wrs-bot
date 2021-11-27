@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import config from '../config';
 import * as m from './models';
 
 const TESTING = false;
@@ -20,7 +21,7 @@ export const sync = async (sequelize) => {
     
     await sequelize.sync({ force: TESTING });
 
-    logModelAssociations(models);
+    // logModelAssociations(models);
 
     if(TESTING) await dummyData(models);
 }
@@ -112,15 +113,15 @@ const dummyData = async (models) => {
     }]);
 }
 
-const syncGuilds = async (guilds) => {
-    // const { Guild } = config.mysql.client.models;
-    // for(let guild of guilds) {
-    //     const G = await Guild.findByPk(guild[0]);
-    //     if(!G) {
-    //         console.log(`Syncing guild ${guild[0]}...`)
-    //         Guild.create( {guild_id: guild[0] })
-    //     }
-    // }
+export const syncGuilds = async (guilds) => {
+    const { Guild } = config.sequelize.models;
+    for(let guild of guilds) {
+        const G = await Guild.findByPk(guild[0]);
+        if(!G) {
+            console.log(`Syncing guild ${guild[0]}...`)
+            Guild.create({ guild_id: guild[0], role_default_color: 'YELLOW' })
+        }
+    }
 }
 
 // code i found on stackoverflow to help me debug & write code
