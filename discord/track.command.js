@@ -18,6 +18,8 @@ export const handleTrack = async (link, interaction) => {
         return;
     }
 
+    const channel = interaction.member.guild.channels.cache.find(c => c.id === interaction.channelId);
+
     const game_subcats = game_information.data.variables.data.filter(v => v['is-subcategory']);  
  
     await interaction.editReply(lang.TRACK_INFO_FOUND);
@@ -41,7 +43,8 @@ export const handleTrack = async (link, interaction) => {
 
         const row = new MessageActionRow().addComponents(...components);
 
-        const message = await interaction.followUp({ content: `Choose value for subcategory ${subcat.name}`, components: [ row ] });
+
+        const message = await channel.send({ content: `Choose value for subcategory ${subcat.name}`, components: [ row ] });
         
         menus.push(message.awaitMessageComponent({ buttonCollectorFilter, componentType: 'BUTTON', time: 300000 })
             .then((i) => {
@@ -62,7 +65,7 @@ export const handleTrack = async (link, interaction) => {
     await Promise.all(menus)
         .then(async () => {
             const lb_name = buildLeaderboardName(game_information.data.game.data.names.international, game_information.data.category.data.name, Object.entries(responses).map(r => r[1].label));
-            await interaction.followUp(`Tracking leaderboard "${lb_name} [${game_information.data.game.data.id} - ${game_information.data.category.data.id}]".`)
+            await channel.send(`Tracking leaderboard "${lb_name} [${game_information.data.game.data.id} - ${game_information.data.category.data.id}]".`)
 
             const { Guild, Leaderboard, Variable } = config.sequelize.models;
             const G = await Guild.findByPk(interaction.guildId);
@@ -84,7 +87,7 @@ export const handleTrack = async (link, interaction) => {
         })
         .catch(async (err) => {
             console.log(err);
-            await interaction.followUp(`An error occurred. Sorry.`)
+            await interaction.editReply(`An error occurred. Sorry.`)
         });
 }
 

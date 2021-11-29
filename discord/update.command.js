@@ -42,23 +42,26 @@ export const updateGuild = async (guild_id) => {
                     guild_id
                 }
             });
-        } else {
-            // Remove everyone that currently has the role
-            console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Role found! Removing all members of the role...`);
-
-            role.members.forEach(async (member) => {
-                console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Removing role from ${member.user.username}#${member.user.discriminator}...`);
-                await member.roles.remove(role);
-            });
         }
 
-        // Assign role to current record holders
-        console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Adding record holders to the role...`);
-
+        // All currently with the role
         let player_discord_ids = [] // list of discord ids to assign the role to
         leaderboard.record_runs.forEach(run => {
             player_discord_ids = [...player_discord_ids, ...run.players.filter(p => !!p.discord_id).map(p => p.discord_id)];
         });
+
+        // Remove everyone that currently has the role that don't deserve it no more, and remove the people that do from player_discord_ids
+        console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Role found! Removing non record holders from the role...`);
+
+        role.members.forEach(async (member) => {
+            if(player_discord_ids.some(p => p === member.user.id)) player_discord_ids = player_discord_ids.filter(p => p.id !== member.user.id);
+            
+            console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Removing role from ${member.user.username}#${member.user.discriminator}...`);
+            await member.roles.remove(role);
+        });
+
+        // Assign role to current record holders
+        console.log(`[UPDATE-GUILD:${guild_id}] "${leaderboard.lb_name}": Adding record holders to the role...`);
 
         player_discord_ids.forEach(discord_id => {
             guild.discord.members.cache.get(discord_id).roles.add(role);
