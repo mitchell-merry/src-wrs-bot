@@ -14,9 +14,14 @@ export const getLeaderboardInformationFromLink = (link) => {
     leaderboard_info = leaderboard_info[leaderboard_info.length-1].split("#");
     let game = leaderboard_info[0]
     let category = leaderboard_info[1]
-    if(!category) return Promise.reject("No category provided.");
+    if(!category) return Promise.reject(lang.LEADERBOARD_ADD_NO_CATEGORY_PROVIDED);
     
-    return fetch(`${config.api_prefix}leaderboards/${game}/category/${category}?embed=variables,game,category&top=1`).then(res => res.json());
+    return fetch(`${config.api_prefix}leaderboards/${game}/category/${category}?embed=variables,game,category&top=1`)
+        .then(res => res.json())
+        .then(res => {
+            if(res.status) return Promise.reject(res.message);
+            else return res;
+        });
 }
 
 export const getProfileFromAPIKey = async (api_key) => {

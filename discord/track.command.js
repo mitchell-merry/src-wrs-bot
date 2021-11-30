@@ -9,7 +9,7 @@ const src_link = /^(https:\/\/www.speedrun.com\/|https:\/\/speedrun.com\/|www.sp
 /* handle adding tracked leaderboards for guilds */
 
 export const handleTrack = async (link, interaction) => {
-    if(!validLink(link)) { interaction.editReply(lang.TRACK_BAD_LINK); return; }
+    if(!validLink(link)) { interaction.editReply(lang.LEADERBOARD_ADD_BAD_LINK); return; }
 
     const game_information = await getLeaderboardInformationFromLink(link);
 
@@ -22,7 +22,7 @@ export const handleTrack = async (link, interaction) => {
 
     const game_subcats = game_information.data.variables.data.filter(v => v['is-subcategory']);  
  
-    await interaction.editReply(lang.TRACK_INFO_FOUND);
+    await interaction.editReply(lang.LEADERBOARD_ADD_INFO_FOUND);
 
     const buttonCollectorFilter = i => { 
         i.deferReply();
