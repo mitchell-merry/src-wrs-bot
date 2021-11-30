@@ -15,7 +15,7 @@ const client = new Client({
 import { token } from './auth';
 import * as db from './db/index.js';
 import config from './config';
-import { updateGuild } from './discord/update.command';
+import { updateGuild } from './discord/update_.command';
 import { receiveDM } from './discord/associate.command';
 import lang from './lang';
 import { handleTrack } from './discord/track.command';

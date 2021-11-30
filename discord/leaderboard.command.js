@@ -66,6 +66,7 @@ const add = async (interaction) => {
     await guild.createLeaderboard({
         game_id: leaderboard_info.data.game.data.id,
         category_id: leaderboard_info.data.category.data.id,
+        lb_name,
         Variables: responses.map(({id, value}) => ({
             variable_id: id,
             value
@@ -77,6 +78,9 @@ const add = async (interaction) => {
     interaction.editReply(lang.LEADERBOARD_ADD_SUCCESS(lb_name));
 }
 
+const remove = async (interaction) => {};
+const modify = async (interaction) => {};
+const list = async (interaction) => {};
 
 const src_link = /^(https:\/\/www.speedrun.com\/|https:\/\/speedrun.com\/|www.speedrun.com\/|speedrun.com\/|)\w+#\w+$/;
 const validLink = (link) => src_link.test(link);
@@ -109,14 +113,12 @@ export default {
     execute: async (interaction) => {
         // Defer reply by default
         await interaction.deferReply();
+
+        const subCommands = { add, remove, modify, list };
         
         try {
-
-            if(interaction.options.getSubcommand() === 'add') {
-                const e = await add(interaction).catch(e => e);
-                if(e) throw e;
-            }
-
+            const e = await subCommands[interaction.options.getSubcommand()](interaction).catch(e => e);
+            if(e) throw e;
         } catch (e) {
             // Let the error bubble up if we did not throw it
             if(typeof e !== "string" && !(e instanceof String)) {
