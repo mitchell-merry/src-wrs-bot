@@ -1,9 +1,10 @@
 import config from '../config.js';
 import lang from '../lang.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { getIdFromUsername } from '../src.js';
+// import { getIdFromUsername } from '../src.js';
 import { link } from './associate.command.js';
 import { adminId } from '../auth.js';
+import { getIdFromUsername } from '../src.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -20,8 +21,7 @@ export default {
                 .setRequired(true)
         ),
     execute: async (interaction) => {
-        if(interaction.user.id !== adminId) interaction.reply({ content: 'This command isn\'t for you!', ephemeral: true });
-        interaction.deferReply();
+        if(interaction.user.id !== adminId) interaction.editReply({ content: 'This command isn\'t for you!', ephemeral: true });
         const user_id = await getIdFromUsername(interaction.options.getString('src_name'));
         console.log(user_id)
         if(user_id.status) {

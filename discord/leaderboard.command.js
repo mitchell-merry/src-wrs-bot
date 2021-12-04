@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { MessageSelectMenu, MessageActionRow, MessageButton } from "discord.js";
 import config from "../config.js"
 import lang from "../lang.js"
-import { getLeaderboardInformationFromLink, buildLeaderboardName } from "../src.js";
+import { getLeaderboardInformationFromLink, buildLeaderboardName } from "../src/leaderboard.src.js";
 
 // Handle the subcommand 'add'.
 const add = async (interaction) => {
@@ -111,9 +111,6 @@ export default {
             .setDescription('Lists all currently tracked leaderboards.')
         ),
     execute: async (interaction) => {
-        // Defer reply by default
-        await interaction.deferReply();
-
         const subCommands = { add, remove, modify, list };
         
         try {
@@ -121,11 +118,7 @@ export default {
             if(e) throw e;
         } catch (e) {
             // Let the error bubble up if we did not throw it
-            if(typeof e !== "string" && !(e instanceof String)) {
-                interaction.editReply({ content: lang.UNKNOWN_ERROR });
-                console.log(e);
-                throw e;
-            }
+            if(typeof e !== "string" && !(e instanceof String)) throw e;
 
             // Otherwise show error to user
             interaction.editReply({content: e});

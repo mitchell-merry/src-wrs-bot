@@ -1,5 +1,5 @@
 import config from '../config.js';
-import { getProfileFromAPIKey } from '../src.js';
+// import { getProfileFromAPIKey } from '../src.js';
 import lang from '../lang.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 
@@ -17,7 +17,7 @@ export const receiveDM = async (message) => {
     } // Check if message fits form of API key.
     else if(APIkey.test(message.content)) {
         await message.channel.send(lang.LINK_RECEIVED_API_KEY);
-        const res = await getProfileFromAPIKey(message.content);
+        // const res = await getProfileFromAPIKey(message.content);
         const player_id = res?.data?.id;
         if(!player_id) await message.channel.send(lang.LINK_INVALID_KEY);
         else {

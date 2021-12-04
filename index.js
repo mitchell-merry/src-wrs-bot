@@ -15,12 +15,10 @@ const client = new Client({
 import { token } from './auth';
 import * as db from './db/index.js';
 import config from './config';
-import { updateGuild } from './discord/update_.command';
 import { receiveDM } from './discord/associate.command';
-import lang from './lang';
-import { handleTrack } from './discord/track.command';
 import { Collection } from '@discordjs/collection';
 import * as fs from 'fs';
+import lang from './lang';
 
 // Initialisation code to be run after the discord client has logged in.
 const init = async () => {
@@ -42,8 +40,6 @@ const init = async () => {
 
     await db.syncGuilds(client.guilds.cache);
 
-    // await updateGuild('867962530964848680');
-
     config.ready = true;
     console.log("Bot is ready.");
 
@@ -56,7 +52,7 @@ const retreiveCommands = async (client) => {
 
     for (const file of commandFiles) {
         const { default: command } = await import(`./discord/${file}`);
-
+        
         client.commands.set(command.data.name, command);
     }
 }
@@ -68,14 +64,14 @@ client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isCommand()) return;
 
     const command = client.commands.get(interaction.commandName);
-
-	if (!command) return;
+	if (!command) return interaction.editReply({ content: lang.UNKNOWN_COMMAND });
 
 	try {
+        await interaction.deferReply();
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
+		await interaction.editReply({ content: lang.UNKNOWN_ERROR });
 	}    
 
 });

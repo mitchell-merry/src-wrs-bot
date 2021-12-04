@@ -1,4 +1,5 @@
 import pkg from "sequelize";
+import config from "../../config";
 const { DataTypes, Model } = pkg;
 
 export default class Guild extends Model {
@@ -42,6 +43,8 @@ export default class Guild extends Model {
     }
 
     static associate(models) {
+        this.models = models;
+
         this.TrackedLeaderboards = this.hasMany(models.TrackedLeaderboard, {
             foreignKey: "guild_id",
             targetKey: "guild_id",
@@ -51,6 +54,33 @@ export default class Guild extends Model {
             through: models.TrackedLeaderboard,
             foreignKey: "guild_id",
             otherKey: "lb_id"
+        });
+    }
+
+    static getWithLeaderboards(guild_id) {
+        const { Leaderboard, Variable } = config.sequelize.models;
+
+        return Guild.findByPk(guild_id, {
+            include: {
+                model: Leaderboard,
+                through: { attributes: [ 'role_id' ] },
+                include: [{ 
+                    model: Variable,
+                    attributes: { exclude: ['lb_id'] }
+                }]
+            },
+        }).then(G => {
+            const guild = { ...G.dataValues };
+
+            guild.Leaderboards = G.dataValues.Leaderboards.map(lb => {
+                const { Variables, TrackedLeaderboard, ...data } = lb.dataValues;
+                
+                return { ...data, ...TrackedLeaderboard.dataValues,
+                    Variables: Variables.map(v => v.dataValues), 
+                };
+            })
+            
+            return guild;
         });
     }
 }

@@ -8,7 +8,9 @@ export default {
     'LINK_INSTRUCTIONS': `To associate your speedrun.com account with your discord account, you need to provide your src API key. You can access it here: https://www.speedrun.com/api/auth.\n\nWe do not store your API key. This bot is open-source and the code is available at https://github.com/mitchell-merry/src-wrs-bot/blob/main/discord/associate.js, for you to read and see what we do with your API key.\n\nYou will be able to refresh your API key immediately after linking and functionality will remain. To unlink your account, you can type 'unlink' in this DM at any time.\n\nTo link your account, send your API key (and only your API key) in these DMs, here.`,
     'LINK_INSTRUCTIONS_SENT': 'You should\'ve been sent a DM with instructions on how to link your account. Make sure you have DMs open.',
 
-    'UPDATE_SUCCESSFUL': 'Guild has been successfully updated!',
+    UPDATE_SUCCESSFUL: 'Guild has been successfully updated!',
+    UPDATE_NOTHING_TO_UPDATE: "Guild has nothing to update!",
+    UPDATE_FETCH_LEADERBOARD_PROGRESS: (current, max) => `Fetching leaderboard information... (${current}/${max})`,
 
     LEADERBOARD_ADD_BAD_LINK: 'Bad link. Your link must be in the form of "<https://www.speedrun.com/GAME#CATEGORY>" ("#CATEGORY" is required, even for games with a single category / for the default category).',
     LEADERBBOARD_ADD_GOOD_LINK: 'Fetching information...',
@@ -20,5 +22,6 @@ export default {
     LEADERBOARD_ADD_TRACKING: (lb_name) => `Tracking leaderboard "${lb_name}"...`,
     LEADERBOARD_ADD_SUCCESS: (lb_name) => `Successfully added "${lb_name}"!`,
 
-    'UNKNOWN_ERROR': "An unexpected error occured! Sorry. Contact diggitydingdong#3084 please!",
+    UNKNOWN_ERROR: "An unexpected error occured! Sorry. Contact diggitydingdong#3084 please!",
+    UNKNOWN_COMMAND: "What command is that? (wtf did you do?)"
 };

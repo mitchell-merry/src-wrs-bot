@@ -8,21 +8,6 @@ export const getIdFromUsername = async (src_name) => {
         .then(res => res.data.id);
 }
 
-export const getLeaderboardInformationFromLink = (link) => {
-    // https://www.speedrun.com/feed_me_billy#Any
-    let leaderboard_info = link.split('/');
-    leaderboard_info = leaderboard_info[leaderboard_info.length-1].split("#");
-    let game = leaderboard_info[0]
-    let category = leaderboard_info[1]
-    if(!category) return Promise.reject(lang.LEADERBOARD_ADD_NO_CATEGORY_PROVIDED);
-    
-    return fetch(`${config.api_prefix}leaderboards/${game}/category/${category}?embed=variables,game,category&top=1`)
-        .then(res => res.json())
-        .then(res => {
-            if(res.status) return Promise.reject(res.message);
-            else return res;
-        });
-}
 
 export const getProfileFromAPIKey = async (api_key) => {
     return await fetch(`${config.api_prefix}profile`, { headers: {"X-API-Key": api_key} })
