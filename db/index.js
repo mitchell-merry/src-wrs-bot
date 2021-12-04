@@ -21,9 +21,11 @@ export const sync = async (sequelize) => {
     
     await sequelize.sync({ force: TESTING });
 
+    // sequelize.query("ALTER TABLE Leaderboard ADD lb_name TEXT");
+
     // logModelAssociations(models);
 
-    if(TESTING) await dummyData(models);
+    // if(TESTING) await dummyData(models);
 }
 
 export const connect = async () => {

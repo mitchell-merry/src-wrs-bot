@@ -11,6 +11,7 @@ export default {
     UPDATE_SUCCESSFUL: 'Guild has been successfully updated!',
     UPDATE_NOTHING_TO_UPDATE: "Guild has nothing to update!",
     UPDATE_FETCH_LEADERBOARD_PROGRESS: (current, max) => `Fetching leaderboard information... (${current}/${max})`,
+    UPDATE_LEADERBOARD_NOT_FOUND: (lb_id, lb_name) => `Leaderboard ${lb_name} [${lb_id}] not found. Removing the leaderboard from database... The role for the board will stay, you can choose to either delete this role or specify it when you re-add this leaderboard with the "role" option.`,
 
     LEADERBOARD_ADD_BAD_LINK: 'Bad link. Your link must be in the form of "<https://www.speedrun.com/GAME#CATEGORY>" ("#CATEGORY" is required, even for games with a single category / for the default category).',
     LEADERBBOARD_ADD_GOOD_LINK: 'Fetching information...',

@@ -43,6 +43,7 @@ const init = async () => {
     config.ready = true;
     console.log("Bot is ready.");
 
+    
 };
 
 const retreiveCommands = async (client) => {

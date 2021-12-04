@@ -20,44 +20,36 @@ const discLimiter = new Bottleneck({
     Specifically, updates the roles and message if available.
 */
 export const update = async (interaction) => {
-    
+    const { Leaderboard } = config.sequelize.models;
     const guild = await Guild.getWithLeaderboards(interaction.guild.id);
 
     // If no message or roles exist, nothing to update.
     if(!guild.wr_message_id && !guild.role_default_color) throw lang.UPDATE_NOTHING_TO_UPDATE;
 
+    const interactionChannel = interaction.guild.channels.cache.get(interaction.channelId);
+
     // Per leaderboard - fetch information, find the role, and update the holders of that role.
     // Todo - segment (verb)
     const leaderboardPromises = guild.Leaderboards.map(lb => 
         // Fetch info for board
-        fetchBoardInformation(lb).then(res => formatLeaderboardObjects(lb, res))
-            // Then, create/find the role
-            .then(async (leaderboard) => {
-                // TODO search for role by name if cant be found
-                leaderboard.role = leaderboard.role_id ? interaction.guild.roles.cache.get(leaderboard.role_id) : null;
+        fetchBoardInformation(lb)
+            /* Check to see if subcategories changed or if category / game don't exist anymore */
+            .then(async (res) => {
+                console.log(`[${lb.lb_id}] updating ${lb.lb_name}`)
                 
-                if(leaderboard.role) return leaderboard;
-                
-                leaderboard.role = await discLimiter.schedule(() => interaction.guild.roles.create({
-                    name: leaderboard.lb_name + ' WR',
-                    color: guild.role_default_color,
-                    hoist: true,
-                    position: 1, // TODO role hoisting
-                    mentionable: false,
-                    permissions: [] // TODO ensure that these roles cant @everyone (and anything else - check default perms)
-                }));
-            
-                await config.sequelize.models.TrackedLeaderboard.update({ role_id: leaderboard.role.id }, {
-                    where: {
-                        lb_id: leaderboard.lb_id,
-                        guild_id: interaction.guild.id
-                    }
-                });
+                if(res.status === 404 || !compareVariables(lb.Variables, res.data.variables.data.filter(v => v['is-subcategory']))) return Promise.reject(res); 
 
-                return leaderboard;
-            })
-            // Update role members
-            .then(leaderboard => {
+                const leaderboard = await formatLeaderboardObjects(lb, res);
+                
+                // Update the lb_name in the database
+                Leaderboard.update({ lb_name: leaderboard.lb_name }, { where: { lb_id: leaderboard.lb_id } });
+
+                // Then, create/find the role
+                leaderboard.role = leaderboard.role_id ? interaction.guild.roles.cache.get(leaderboard.role_id) : await createRoleAndAttach(leaderboard, interaction.guild);
+                
+                /*
+                    Update role members
+                */
                 // Discord ids that need to have the role
                 let playerDiscordIds = leaderboard.record_runs.map(run => run.players.filter(p => !!p.discord_id).map(p => p.discord_id)).flat();
                 
@@ -72,13 +64,53 @@ export const update = async (interaction) => {
 
                 return leaderboard;
             })
-            .then(leaderboard => console.log(`updated ${leaderboard.lb_name}`))
+            .then(leaderboard => console.log(`[${leaderboard.lb_id}] updated ${leaderboard.lb_name}`))
+            .catch(async (res) => {
+                interactionChannel.send(lang.UPDATE_LEADERBOARD_NOT_FOUND(lb.lb_id));
+                console.log(lang.UPDATE_LEADERBOARD_NOT_FOUND(lb.lb_id, lb.lb_name));
+                
+                Leaderboard.destroy({ where: { lb_id: lb.lb_id } });
+            })
     );
 
     await Promise.all(leaderboardPromises);
     
     interaction.editReply({ content: lang.UPDATE_SUCCESSFUL });
 };
+
+// TODO search for role by name if cant be found
+const createRoleAndAttach = async (leaderboard, guild) => {
+    const role = await discLimiter.schedule(() => guild.roles.create({
+        name: leaderboard.lb_name + ' WR',
+        color: guild.role_default_color,
+        hoist: true,
+        position: 1, // TODO role hoisting
+        mentionable: false,
+        permissions: [] // TODO ensure that these roles cant @everyone (and anything else - check default perms)
+    }));
+
+    await config.sequelize.models.TrackedLeaderboard.update({ role_id: leaderboard.role.id }, {
+        where: {
+            lb_id: leaderboard.lb_id,
+            guild_id: interaction.guild.id
+        }
+    });
+
+    return role;
+}
+
+const compareVariables = (dbVariables, rawVariables) => {
+    
+    if(dbVariables.length !== rawVariables.length) return false;
+
+    // Compare each variable - if it cant find a matching variable, reject. If the found variable doesnt have the matching value, reject
+    dbVariables.forEach(({ variable_id, value }) => {
+        const rawMatch = rawVariables.find(rv => rv.id === variable_id);
+        if(!rawMatch || !rawMatch.values.values[value]) return false; // no match! reject
+    });
+
+    return true;
+}
 
 export default {
     data: new SlashCommandBuilder()

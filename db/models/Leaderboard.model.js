@@ -18,6 +18,10 @@ export default class Leaderboard extends Model {
             category_id: {
                 field: "category_id",
                 type: DataTypes.STRING,
+            },
+            lb_name: {
+                field: "lb_name",
+                type: DataTypes.STRING,
             }
         }, {
             tableName: "Leaderboard",
