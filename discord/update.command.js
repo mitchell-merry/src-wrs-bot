@@ -50,10 +50,10 @@ export const update = async (interaction) => {
                 */
                 // Discord ids that need to have the role
                 let playerDiscordIds = leaderboard.record_runs.map(run => run.players.filter(p => !!p.discord_id).map(p => p.discord_id)).flat();
-                
+
                 // Remove role from people that shouldn't have it
                 leaderboard.role.members.forEach(async (member) => {
-                    if(playerDiscordIds.some(p => p === member.user.id)) playerDiscordIds = playerDiscordIds.filter(p => p.id !== member.user.id);
+                    if(playerDiscordIds.some(p => p === member.user.id)) playerDiscordIds = playerDiscordIds.filter(p => p !== member.user.id);
                     else discLimiter.schedule(() => member.roles.remove(leaderboard.role));
                 });
 
