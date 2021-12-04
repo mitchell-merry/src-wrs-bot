@@ -6,11 +6,7 @@ import Bottleneck from 'bottleneck';
 import config from '../config.js';
 
 const discLimiter = new Bottleneck({
-    reservoir: 100,
-    reservoirRefreshAmount: 100,
-    reservoirRefreshInterval: 60*1000,
-
-    maxConcurrent: 5,
+    maxConcurrent: 1,
     minTime: 100,
 });
 
@@ -26,7 +22,8 @@ export const update = async (interaction) => {
     // If no message or roles exist, nothing to update.
     if(!guild.wr_message_id && !guild.role_default_color) throw lang.UPDATE_NOTHING_TO_UPDATE;
 
-    const interactionChannel = interaction.guild.channels.cache.get(interaction.channelId);
+    guild.discord = interaction.guild;
+    const interactionChannel = guild.discord.channels.cache.get(interaction.channelId);
 
     // Per leaderboard - fetch information, find the role, and update the holders of that role.
     // Todo - segment (verb)
@@ -37,7 +34,7 @@ export const update = async (interaction) => {
             .then(async (res) => {
                 console.log(`[${lb.lb_id}] updating ${lb.lb_name}`)
                 
-                if(res.status === 404 || !compareVariables(lb.Variables, res.data.variables.data.filter(v => v['is-subcategory']))) return Promise.reject(res); 
+                if(res.status === 404 || !compareVariables(lb.Variables, res.data.variables.data.filter(v => v['is-subcategory']))) return Promise.reject(404); 
 
                 const leaderboard = await formatLeaderboardObjects(lb, res);
                 
@@ -45,8 +42,9 @@ export const update = async (interaction) => {
                 Leaderboard.update({ lb_name: leaderboard.lb_name }, { where: { lb_id: leaderboard.lb_id } });
 
                 // Then, create/find the role
-                leaderboard.role = leaderboard.role_id ? interaction.guild.roles.cache.get(leaderboard.role_id) : await createRoleAndAttach(leaderboard, interaction.guild);
-                
+                leaderboard.role = leaderboard.role_id ? guild.discord.roles.cache.get(leaderboard.role_id) : null;
+                if(!leaderboard.role) leaderboard.role = await createRoleAndAttach(leaderboard, guild);
+
                 /*
                     Update role members
                 */
@@ -60,16 +58,21 @@ export const update = async (interaction) => {
                 });
 
                 // Add roles to people that need it
-                playerDiscordIds.forEach(discordId => discLimiter.schedule(() => interaction.guild.members.cache.get(discordId).roles.add(leaderboard.role)));
+                playerDiscordIds.forEach(discordId => discLimiter.schedule(() => guild.discord.members.cache.get(discordId).roles.add(leaderboard.role)));
 
                 return leaderboard;
             })
             .then(leaderboard => console.log(`[${leaderboard.lb_id}] updated ${leaderboard.lb_name}`))
-            .catch(async (res) => {
-                interactionChannel.send(lang.UPDATE_LEADERBOARD_NOT_FOUND(lb.lb_id));
-                console.log(lang.UPDATE_LEADERBOARD_NOT_FOUND(lb.lb_id, lb.lb_name));
-                
-                Leaderboard.destroy({ where: { lb_id: lb.lb_id } });
+            .catch(async (e) => {
+                if(e === 404) {
+                    interactionChannel.send(lang.UPDATE_LEADERBOARD_NOT_FOUND(lb.lb_id, lb.lb_name));
+                    console.log(lang.UPDATE_LEADERBOARD_NOT_FOUND(lb.lb_id, lb.lb_name));
+                    
+                    Leaderboard.destroy({ where: { lb_id: lb.lb_id } });
+                } else {
+                    console.error(e);
+                    throw e;
+                }
             })
     );
 
@@ -80,7 +83,8 @@ export const update = async (interaction) => {
 
 // TODO search for role by name if cant be found
 const createRoleAndAttach = async (leaderboard, guild) => {
-    const role = await discLimiter.schedule(() => guild.roles.create({
+    
+    const role = await discLimiter.schedule(() => guild.discord.roles.create({
         name: leaderboard.lb_name + ' WR',
         color: guild.role_default_color,
         hoist: true,
@@ -89,10 +93,10 @@ const createRoleAndAttach = async (leaderboard, guild) => {
         permissions: [] // TODO ensure that these roles cant @everyone (and anything else - check default perms)
     }));
 
-    await config.sequelize.models.TrackedLeaderboard.update({ role_id: leaderboard.role.id }, {
+    await config.sequelize.models.TrackedLeaderboard.update({ role_id: role.id }, {
         where: {
             lb_id: leaderboard.lb_id,
-            guild_id: interaction.guild.id
+            guild_id: guild.discord.id
         }
     });
 

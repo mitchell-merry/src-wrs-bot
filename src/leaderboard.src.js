@@ -17,7 +17,6 @@ export const fetchBoardInformation = (leaderboard) => {
     let req = `${config.api_prefix}leaderboards/${leaderboard.game_id}/category/${leaderboard.category_id}?embed=game,category,variables,players&top=1&${
         variableListToURLParameters(leaderboard.Variables)
     }`;
-    console.log(req);
     return srcFetch(req).then(res => res.json());
 }
 
