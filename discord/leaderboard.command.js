@@ -28,7 +28,7 @@ const add = async (interaction) => {
         const componentType = labels.length <= 5;
 
         // Maximum number of buttons in a row is 5. If there are more than 5, use a select menu.
-        const comp = componentType ? labels.map(l => buildButton(l.id, l.label)) : buildSelect(game_subcategory.id, labels);
+        const comp = componentType ? labels.map(l => buildButton(l.value, l.label)) : buildSelect(game_subcategory.id, labels);
 
         // Send the message with the component
         const message = await interaction_channel.send({ content: lang.LEADERBOARD_ADD_CHOOSE_VALUE(game_subcategory.name), components: [new MessageActionRow().addComponents(comp)] })
@@ -130,10 +130,11 @@ const remove = async (interaction) => {
 const modify = async (interaction) => {};
 const list = async (interaction) => {};
 
-const src_link = /^(https:\/\/www.speedrun.com\/|https:\/\/speedrun.com\/|www.speedrun.com\/|speedrun.com\/|)\w+#\w+$/;
+const src_link = /^(https:\/\/www.speedrun.com\/|https:\/\/speedrun.com\/|www.speedrun.com\/|speedrun.com\/|)[\w.]+#[\w.]+$/;
 const validLink = (link) => src_link.test(link);
 const buildButton = (id, label) => new MessageButton().setCustomId(id).setLabel(label).setStyle("PRIMARY");
 const buildSelect = (id, values, min=1, max=1) => new MessageSelectMenu().setCustomId(id).setPlaceholder('Nothing selected.').setMinValues(min).setMaxValues(max).addOptions(values)
+// ty stack overflow <3
 const array_chunks = (array, chunk_size) => Array(Math.ceil(array.length / chunk_size)).fill().map((_, index) => index * chunk_size).map(begin => array.slice(begin, begin + chunk_size));
 
 export default {
