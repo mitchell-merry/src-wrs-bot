@@ -23,7 +23,7 @@ const add = async (interaction) => {
     // Receive responses from the user for the value for each subcategory.
     const menus = await game_subcategories.map(async (game_subcategory) => {
         const { choices, values } = game_subcategory.values; // game_subcategory.values.values
-        const labels = Object.entries(choices).map(c => ({ id: c[0], label: c[1] }));
+        const labels = Object.entries(choices).map(c => ({ label: c[1], value: c[0], }));
 
         const componentType = labels.length <= 5;
 
@@ -45,7 +45,6 @@ const add = async (interaction) => {
                 // Return selected data
                 return { id: game_subcategory.id, value: val, label: choices[val], message };
             });
-
     });
 
     const responses = await Promise.all(menus).catch(e => { throw e });
@@ -59,7 +58,7 @@ const add = async (interaction) => {
 
     // Create leaderboard object under guild
     // TODO: Check if exists first to prevent double adding leaderboards
-    const { Guild, Leaderboard, TrackedLeaderboard } = config.sequelize.models;
+    const { Guild, Leaderboard } = config.sequelize.models;
     const guild = await Guild.findByPk(interaction.guildId);
     const role = interaction.options.getRole('role');
 
@@ -78,14 +77,49 @@ const add = async (interaction) => {
     interaction.editReply(lang.LEADERBOARD_ADD_SUCCESS(lb_name));
 }
 
-const remove = async (interaction) => {};
+const remove = async (interaction) => {
+    const { Guild, Leaderboard } = config.sequelize.models;
+    
+    // Present the user with a dropdown of leaderboards
+    const guild = await Guild.findByPk(interaction.guildId);
+    const leaderboards = await guild.getLeaderboards();
+
+    if(leaderboards.length === 0) throw lang.LEADERBOARD_REMOVE_NO_LEADERBOARDS;
+
+    const options = leaderboards.map(lb => ({
+        label: lb.lb_name,
+        value: lb.lb_id+'',
+    }));
+    const select = buildSelect('select', options, 1, options.length);
+    
+    const message = await interaction.editReply({ content: lang.LEADERBOARD_REMOVE_CHOOSE_VALUE, components: [ await new MessageActionRow().addComponents(select) ] })
+
+    const response = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
+        .then(async (i) => {
+            // Get the labels for the leaderboards to display to the user:
+            const labels = i.values.map(v => options.find(o => o.value === v).label);
+            
+            // Update relevant UI
+            await message.edit({ content: lang.LEADERBOARD_REMOVE_REMOVING(labels), components: [] });
+            
+            // Remove leaderboards
+            i.values.forEach(async (v) => await Leaderboard.destroy({ where: { lb_id: parseInt(v) } }));
+
+            // Return selected data
+            return labels;
+        });
+
+        console.log('a');
+
+    interaction.editReply({ content: lang.LEADERBOARD_REMOVE_SUCCESS(response), components: [] })
+};
 const modify = async (interaction) => {};
 const list = async (interaction) => {};
 
 const src_link = /^(https:\/\/www.speedrun.com\/|https:\/\/speedrun.com\/|www.speedrun.com\/|speedrun.com\/|)\w+#\w+$/;
 const validLink = (link) => src_link.test(link);
 const buildButton = (id, label) => new MessageButton().setCustomId(id).setLabel(label).setStyle("PRIMARY");
-const buildSelect = (id, values) => new MessageSelectMenu().setCustomId(id).setPlaceholder('Nothing selected.').setMaxValues(1).setMinValues(1).addOptions(values.map(v => ({ label: v.label, value: v.id })))
+const buildSelect = (id, values, min=1, max=1) => new MessageSelectMenu().setCustomId(id).setPlaceholder('Nothing selected.').setMinValues(min).setMaxValues(max).addOptions(values)
 
 export default {
     data: new SlashCommandBuilder()

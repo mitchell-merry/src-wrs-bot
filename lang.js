@@ -14,7 +14,7 @@ export default {
     UPDATE_LEADERBOARD_NOT_FOUND: (lb_id, lb_name) => `Leaderboard ${lb_name} [${lb_id}] not found. Removing the leaderboard from database... The role for the board will stay, you can choose to either delete this role or specify it when you re-add this leaderboard with the "role" option.`,
 
     LEADERBOARD_ADD_BAD_LINK: 'Bad link. Your link must be in the form of "<https://www.speedrun.com/GAME#CATEGORY>" ("#CATEGORY" is required, even for games with a single category / for the default category).',
-    LEADERBBOARD_ADD_GOOD_LINK: 'Fetching information...',
+    LEADERBOARD_ADD_GOOD_LINK: 'Fetching information...',
     LEADERBOARD_ADD_INFO_FOUND: 'Found game and category!',
     LEADERBOARD_ADD_NOT_FOUND: (data) => `Game ${data} could not be found.`,
     LEADERBOARD_ADD_NO_CATEGORY_PROVIDED: 'No category provided. Please be sure to include the #CATEGORY at the end of your link, e.g. https://www.speedrun.com/cuphead#All_Bosses. You may need to click on the tab for the category you desire to add to get this appear in your URL bar.',
@@ -22,6 +22,11 @@ export default {
     LEADERBOARD_ADD_VALUE_CHOSEN: (label) => `Selected ${label}!`,
     LEADERBOARD_ADD_TRACKING: (lb_name) => `Tracking leaderboard "${lb_name}"...`,
     LEADERBOARD_ADD_SUCCESS: (lb_name) => `Successfully added "${lb_name}"!`,
+
+    LEADERBOARD_REMOVE_NO_LEADERBOARDS: `No leaderboards are in this guild!`,
+    LEADERBOARD_REMOVE_CHOOSE_VALUE: `Select leaderboard(s) to remove:`,
+    LEADERBOARD_REMOVE_REMOVING: (leaderboards) => `Removing the leaderboards ${leaderboards.join(', ')}`,
+    LEADERBOARD_REMOVE_SUCCESS: (leaderboards) => `Successfully removed leaderboards ${leaderboards.join(', ')}`,
 
     UNKNOWN_ERROR: "An unexpected error occured! Sorry. Contact diggitydingdong#3084 please!",
     UNKNOWN_COMMAND: "What command is that? (wtf did you do?)"

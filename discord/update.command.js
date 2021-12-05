@@ -2,14 +2,8 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import Guild from '../db/models/Guild.model.js';
 import lang from '../lang.js';
 import { fetchBoardInformation, formatLeaderboardObjects } from '../src/leaderboard.src.js'; 
-import Bottleneck from 'bottleneck';
 import config from '../config.js';
-
-const discLimiter = new Bottleneck({
-    maxConcurrent: 1,
-    minTime: 100,
-});
-
+import discLimiter from './discLimiter.js';
 
 /*
     Update the given guild with guild_id.
