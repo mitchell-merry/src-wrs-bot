@@ -26,8 +26,8 @@ export default {
     LEADERBOARD_REMOVE_NO_LEADERBOARDS: `No leaderboards are in this guild!`,
     LEADERBOARD_REMOVE_CHOOSE_VALUE: `Select leaderboard(s) to remove:`,
     LEADERBOARD_REMOVE_VALUE_CHOSEN: (leaderboards) => `Selected: ${leaderboards.join(', ')}`,
-    LEADERBOARD_REMOVE_REMOVING: (leaderboards) => `Removing the leaderboards ${leaderboards.join(', ')}`,
-    LEADERBOARD_REMOVE_SUCCESS: (leaderboards) => `Successfully removed leaderboards ${leaderboards.join(', ')}`,
+    LEADERBOARD_REMOVE_REMOVING: (leaderboards) => `Removing the leaderboard(s) ${leaderboards.join(', ')}`,
+    LEADERBOARD_REMOVE_SUCCESS: (leaderboards) => `Successfully removed leaderboard(s) ${leaderboards.join(', ')}`,
 
     UNKNOWN_ERROR: "An unexpected error occured! Sorry. Contact diggitydingdong#3084 please!",
     UNKNOWN_COMMAND: "What command is that? (wtf did you do?)"
