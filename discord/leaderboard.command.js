@@ -83,35 +83,49 @@ const remove = async (interaction) => {
     // Present the user with a dropdown of leaderboards
     const guild = await Guild.findByPk(interaction.guildId);
     const leaderboards = await guild.getLeaderboards();
+    const interaction_channel = interaction.member.guild.channels.cache.find(c => c.id === interaction.channelId); // Channel object for the channel that the interaction occured in.
 
     if(leaderboards.length === 0) throw lang.LEADERBOARD_REMOVE_NO_LEADERBOARDS;
 
-    const options = leaderboards.map(lb => ({
+    const option_sets = array_chunks(leaderboards.map(lb => ({
         label: lb.lb_name,
         value: lb.lb_id+'',
-    }));
-    const select = buildSelect('select', options, 1, options.length);
-    
-    const message = await interaction.editReply({ content: lang.LEADERBOARD_REMOVE_CHOOSE_VALUE, components: [ await new MessageActionRow().addComponents(select) ] })
+    })), 25);
 
-    const response = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
-        .then(async (i) => {
-            // Get the labels for the leaderboards to display to the user:
-            const labels = i.values.map(v => options.find(o => o.value === v).label);
-            
-            // Update relevant UI
-            await message.edit({ content: lang.LEADERBOARD_REMOVE_REMOVING(labels), components: [] });
-            
-            // Remove leaderboards
-            i.values.forEach(async (v) => await Leaderboard.destroy({ where: { lb_id: parseInt(v) } }));
+    interaction.editReply(lang.LEADERBOARD_REMOVE_CHOOSE_VALUE);
 
-            // Return selected data
-            return labels;
-        });
+    const menus = option_sets.map(async (options, i) => {
+        const select = buildSelect('select' + i, options, 1, options.length);
 
-        console.log('a');
+        // Content is a zero-width space
+        const message = await interaction_channel.send({ content: '​', components: [ await new MessageActionRow().addComponents(select) ] })
 
-    interaction.editReply({ content: lang.LEADERBOARD_REMOVE_SUCCESS(response), components: [] })
+        return message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
+            .then(async (i) => {
+                // Get the labels for the leaderboards to display to the user:
+                const selected = i.values.map(v => ({
+                    value: v,
+                    label: options.find(o => o.value === v).label
+                }));
+                
+                // Update relevant UI
+                await message.edit({ content: lang.LEADERBOARD_REMOVE_VALUE_CHOSEN(selected.map(s => s.label)), components: [] });
+
+                // Return selected data
+                return { selected, message };
+            });
+    });
+
+    const responses = await Promise.all(menus);
+
+    // Delete select messages
+    responses.forEach(r => r.message.delete());
+
+    // Remove leaderboards
+    const toRemove = responses.map(r => r.selected).flat();
+    toRemove.forEach(async (t) => await Leaderboard.destroy({ where: { lb_id: parseInt(t.value) } }));    
+
+    interaction.editReply({ content: lang.LEADERBOARD_REMOVE_SUCCESS(toRemove.map(t => t.label)), components: [] })
 };
 const modify = async (interaction) => {};
 const list = async (interaction) => {};
@@ -120,6 +134,7 @@ const src_link = /^(https:\/\/www.speedrun.com\/|https:\/\/speedrun.com\/|www.sp
 const validLink = (link) => src_link.test(link);
 const buildButton = (id, label) => new MessageButton().setCustomId(id).setLabel(label).setStyle("PRIMARY");
 const buildSelect = (id, values, min=1, max=1) => new MessageSelectMenu().setCustomId(id).setPlaceholder('Nothing selected.').setMinValues(min).setMaxValues(max).addOptions(values)
+const array_chunks = (array, chunk_size) => Array(Math.ceil(array.length / chunk_size)).fill().map((_, index) => index * chunk_size).map(begin => array.slice(begin, begin + chunk_size));
 
 export default {
     data: new SlashCommandBuilder()
