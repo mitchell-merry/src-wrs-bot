@@ -64,6 +64,8 @@ client.login(token);
 client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isCommand()) return;
 
+    if(interaction.user.id !== config.administrator_id) interaction.editReply({ content: lang.PERMISSION_DENIED });
+
     const command = client.commands.get(interaction.commandName);
 	if (!command) return interaction.editReply({ content: lang.UNKNOWN_COMMAND });
 

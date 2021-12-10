@@ -30,5 +30,6 @@ export default {
     LEADERBOARD_REMOVE_SUCCESS: (leaderboards) => `Successfully removed leaderboard(s) ${leaderboards.join(', ')}`,
 
     UNKNOWN_ERROR: "An unexpected error occured! Sorry. Contact diggitydingdong#3084 please!",
-    UNKNOWN_COMMAND: "What command is that? (wtf did you do?)"
+    UNKNOWN_COMMAND: "What command is that? (wtf did you do?)",
+    PERMISSION_DENIED: "loser"
 };
