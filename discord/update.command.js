@@ -52,7 +52,11 @@ export const update = async (interaction) => {
                 });
 
                 // Add roles to people that need it
-                playerDiscordIds.forEach(discordId => discLimiter.schedule(() => guild.discord.members.cache.get(discordId).roles.add(leaderboard.role)));
+                playerDiscordIds.forEach(discordId => discLimiter.schedule(() => {
+                    const member = guild.discord.members.cache.get(discordId)
+                    
+                    if(member) member.roles.add(leaderboard.role)
+                }));
 
                 return leaderboard;
             })

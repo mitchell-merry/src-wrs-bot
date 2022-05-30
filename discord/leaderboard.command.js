@@ -78,12 +78,13 @@ const add = async (interaction) => {
 }
 
 const remove = async (interaction) => {
-    const { Guild, Leaderboard } = config.sequelize.models;
+    const { Guild, Leaderboard, TrackedLeaderboard } = config.sequelize.models;
     
     // Present the user with a dropdown of leaderboards
     const guild = await Guild.findByPk(interaction.guildId);
     const leaderboards = await guild.getLeaderboards();
     const interaction_channel = interaction.member.guild.channels.cache.find(c => c.id === interaction.channelId); // Channel object for the channel that the interaction occured in.
+    const delete_role = interaction.options.getBoolean('delete_role');
 
     if(leaderboards.length === 0) throw lang.LEADERBOARD_REMOVE_NO_LEADERBOARDS;
 
@@ -123,7 +124,18 @@ const remove = async (interaction) => {
 
     // Remove leaderboards
     const toRemove = responses.map(r => r.selected).flat();
-    toRemove.forEach(async (t) => await Leaderboard.destroy({ where: { lb_id: parseInt(t.value) } }));    
+    toRemove.forEach(async (t) => {
+        // Get leaderboard
+        const lb = await TrackedLeaderboard.findOne({ where: { lb_id: parseInt(t.value), guild_id: interaction.member.guild.id } })
+        console.log(lb);
+        console.log(JSON.stringify(lb, null, 2));
+
+        // Delete role if exists and should do so
+        if(delete_role) {
+            const lb_role = await interaction.member.guild.roles.cache.get()
+            console.log(interaction.member.guild);
+        }
+    });    
 
     interaction.editReply({ content: lang.LEADERBOARD_REMOVE_SUCCESS(toRemove.map(t => t.label)), components: [] })
 };
@@ -153,6 +165,9 @@ export default {
         )
         .addSubcommand(scmd => scmd.setName('remove')
             .setDescription('Remove a currently tracked leaderboard.')
+            .addBooleanOption(o => o.setName('delete_role')
+                .setDescription('Delete the associated role when removing this leaderboard.')
+            )
         )
         .addSubcommand(scmd => scmd.setName('modify')
             .setDescription('Modify the settings of a tracked leaderboard.')
